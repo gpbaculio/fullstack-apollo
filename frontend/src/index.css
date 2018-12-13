@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #F8F8F8;
+}
+@media only screen and (max-width: 993px) {
+  .login-container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+@media only screen and (max-width: 769px) {
+  .login-container {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .header-login-form {
+    justify-content: space-between;
+    display: flex;
+    width: 100%
+  }
+  .header-login-button {
+    align-self: flex-end;
+  }
+}
+@media only screen and (max-width: 592px) {
+  .header-email-container {
+    width: 40%;
+  }
+  .header-password-container {
+    width: 40%;
+  }
+}
