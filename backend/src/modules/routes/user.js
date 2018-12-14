@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
             .save()
             .then(userRecord => {
                 sendConfirmationEmail(userRecord)
-                res.json({ error: null })
+                res.json({ email: userRecord.email, error: null })
             })
     }
 })

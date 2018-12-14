@@ -9,6 +9,7 @@ const typeDefs = gql`
   }
   type SignUpResponse {
     error: String
+    email: String
   }
   type User {
     id: ID!

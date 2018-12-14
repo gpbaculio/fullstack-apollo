@@ -18,9 +18,6 @@ app.use('/api/todo', todo)
 
 mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true })
-
-const db = mongoose.connection;
-db.on('error', (e) => console.log(e)).once('open', () => console.log('Connection to Database established.'))
-
+mongoose.set('useCreateIndex', true);
 
 export default app

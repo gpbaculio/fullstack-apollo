@@ -80,8 +80,8 @@ class SignUp extends Component {
     } = this.state;
     const { loading } = this.props
     return (
-      <Container style={{ height: "100vh" }}>
-        <Row className="align-items-center justify-content-center" style={{ height: "100vh" }}>
+      <Container style={{ height: "75vh" }}>
+        <Row className="align-items-center justify-content-center" style={{ height: "75vh" }}>
           <Col xs="12" sm="8" lg="6">
             <Card>
               <CardHeader>

@@ -16,7 +16,7 @@ function App() {
     <Fragment>
       <Header />
       <Query query={IS_LOGGED_IN}>
-        {({ data }) => data.isLoggedIn ? (
+        {({ data: { isLoggedIn } }) => isLoggedIn ? (
           <Fragment>
             <Router primary={false} component={Fragment}>
               <Home path="/" />

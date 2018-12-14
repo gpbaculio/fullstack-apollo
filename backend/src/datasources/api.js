@@ -12,8 +12,11 @@ class Api extends RESTDataSource {
   }
 
   async signUp({ email, password }) {
-    const { error } = await this.post('/user', { email, password })
-    return error
+    const response = await this.post('/user', { email, password })
+    return {
+      error: response.error,
+      email: response.email
+    }
   }
 }
 
