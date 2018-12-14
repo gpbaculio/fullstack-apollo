@@ -23,8 +23,8 @@ class SignUp extends Component {
 
   componentDidUpdate = () => {
     const { data } = this.props
-    const { formErrors } = this.state
-    if (data) {
+    if (data && data.signUp.error) {
+      const { formErrors } = this.state
       if (formErrors.email !== data.signUp.error) {
         this.setState({ formErrors: { email: data.signUp.error } })
       }
