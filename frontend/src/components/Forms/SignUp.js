@@ -11,6 +11,15 @@ import {
 } from 'reactstrap'
 import isEmail from 'validator/lib/isEmail'
 
+// const SIGN_UP = gql`
+//   query signUp {
+//     signUp @client {
+//       success
+//       message
+//     }
+//   }
+// `;
+
 class SignUp extends Component {
 
   state = {
@@ -41,12 +50,11 @@ class SignUp extends Component {
   onSubmit = async (e) => {
     e.preventDefault();
     const { data } = this.state
-    const { signUp } = this.props
     const formErrors = this.validate(data);
     this.setState({ formErrors })
     if (Object.keys(formErrors).length === 0) {
-      const { email, password } = data
-      signUp({ variables: { email, password } });
+      const { signUp } = this.props
+      signUp({ variables: { ...data } });
     }
   };
 
@@ -134,13 +142,17 @@ class SignUp extends Component {
 }
 
 SignUp.defaultProps = {
-  data: undefined
+  data: {
+    signUp: {
+      error: null
+    }
+  }
 }
 
 SignUp.propTypes = {
   data: PropTypes.shape({
     signUp: PropTypes.shape({
-      error: PropTypes.string.isRequired,
+      error: PropTypes.string,
     }).isRequired,
   }),
   signUp: PropTypes.func.isRequired,

@@ -15,18 +15,18 @@ const SIGNUP_USER = gql`
 function Welcome() {
   return (
     <ApolloConsumer>
-      {() => (
+      {client => (
         <Mutation
           mutation={SIGNUP_USER}
+          onCompleted={({ signUp }) => {
+            if (signUp.error === null) {
+              client.writeData({ data: { signUpSuccess: true } });
+            }
+          }}
         >
           {(signUp, attr = {}) => {
             if (attr.error) return <p>An error occurred</p>;
-            return (
-              <SignUpForm
-                {...attr}
-                signUp={signUp}
-              />
-            )
+            return <SignUpForm {...attr} signUp={signUp} />
           }}
         </Mutation>
       )}

@@ -8,7 +8,7 @@ const typeDefs = gql`
     signUp(email: String, password: String): SignUpResponse
   }
   type SignUpResponse {
-    error: String!
+    error: String
   }
   type User {
     id: ID!
