@@ -5,7 +5,10 @@ const typeDefs = gql`
     viewer: User
   }
   type Mutation {
-    signUp(email: String, password: String): String
+    signUp(email: String, password: String): SignUpResponse
+  }
+  type SignUpResponse {
+    error: String!
   }
   type User {
     id: ID!

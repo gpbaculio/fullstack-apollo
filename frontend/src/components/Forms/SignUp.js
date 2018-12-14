@@ -7,7 +7,7 @@ import {
   Card,
   CardHeader,
   CardBody,
-  Button
+  Button,
 } from 'reactstrap'
 import isEmail from 'validator/lib/isEmail'
 
@@ -18,9 +18,18 @@ class SignUp extends Component {
       email: "",
       password: ""
     },
-    errors: {},
-    loading: false,
+    formErrors: {},
   };
+
+  componentDidUpdate = () => {
+    const { data } = this.props
+    const { formErrors } = this.state
+    if (data) {
+      if (formErrors.email !== data.signUp.error) {
+        this.setState({ formErrors: { email: data.signUp.error } })
+      }
+    }
+  }
 
   onChange = e => {
     const { name, value } = e.target
@@ -33,31 +42,35 @@ class SignUp extends Component {
     e.preventDefault();
     const { data } = this.state
     const { signUp } = this.props
-    const errors = this.validate(data);
-    this.setState({ errors })
-    if (Object.keys(errors).length === 0) {
+    const formErrors = this.validate(data);
+    this.setState({ formErrors })
+    if (Object.keys(formErrors).length === 0) {
       const { email, password } = data
       signUp({ variables: { email, password } });
     }
   };
 
   validate = ({ email, password }) => {
-    const errors = {};
+    const formErrors = {};
     if (!isEmail(email)) {
-      errors.email = "Invalid email";
+      formErrors.email = "Invalid email";
     }
     if (!password) {
-      errors.password = "Can't be blank";
+      formErrors.password = "Can't be blank";
     }
-    return errors;
+    return formErrors;
   };
+
+  clearAler = () => {
+    this.setState({ formErrors: { email: '' } })
+  }
 
   render() {
     const {
       data,
-      errors,
-      loading
+      formErrors,
     } = this.state;
+    const { loading } = this.props
     return (
       <Container style={{ height: "100vh" }}>
         <Row className="align-items-center justify-content-center" style={{ height: "100vh" }}>
@@ -80,10 +93,10 @@ class SignUp extends Component {
                         value={data.email}
                         onChange={this.onChange}
                         className={
-                          errors.email ? "form-control is-invalid" : "form-control"
+                          formErrors.email ? "form-control is-invalid" : "form-control"
                         }
                       />
-                      <div className="invalid-feedback">{errors.email}</div>
+                      <div className="invalid-feedback">{formErrors.email}</div>
                     </label>
                   </div>
                   <div className="form-group">
@@ -96,10 +109,10 @@ class SignUp extends Component {
                         value={data.password}
                         onChange={this.onChange}
                         className={
-                          errors.password ? "form-control is-invalid" : "form-control"
+                          formErrors.password ? "form-control is-invalid" : "form-control"
                         }
                       />
-                      <div className="invalid-feedback">{errors.password}</div>
+                      <div className="invalid-feedback">{formErrors.password}</div>
                     </label>
                   </div>
                   <Button
@@ -120,8 +133,18 @@ class SignUp extends Component {
   }
 }
 
+SignUp.defaultProps = {
+  data: undefined
+}
+
 SignUp.propTypes = {
+  data: PropTypes.shape({
+    signUp: PropTypes.shape({
+      error: PropTypes.string.isRequired,
+    }).isRequired,
+  }),
   signUp: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 }
 
 export default SignUp
