@@ -6,8 +6,10 @@ import gql from 'graphql-tag';
 import { Home, Welcome, Confirmation, Header } from './components'
 
 const IS_LOGGED_IN = gql`
-  query IsUserLoggedIn {
-    isLoggedIn @client
+  query LogInState {
+    logIn @client {
+      isLoggedIn
+    }
   }
 `;
 
@@ -16,7 +18,7 @@ function App() {
     <Fragment>
       <Header />
       <Query query={IS_LOGGED_IN}>
-        {({ data: { isLoggedIn } }) => isLoggedIn ? (
+        {({ data: { logIn: { isLoggedIn } } }) => isLoggedIn ? (
           <Fragment>
             <Router primary={false} component={Fragment}>
               <Home path="/" />

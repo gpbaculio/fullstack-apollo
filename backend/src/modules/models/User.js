@@ -48,4 +48,11 @@ schema.methods.generateConfirmationUrl = function generateConfirmationUrl() {
     return `${process.env.HOSTNAME || process.env.LOCALHOST}confirmation/${this.confirmationToken}`
 }
 
+schema.methods.toAuthJSON = function toAuthJSON() {
+    return {
+        email: this.email,
+        token: this.generateJWT(),
+        confirmed: this.confirmed
+    }
+}
 export default mongoose.model('User', schema)

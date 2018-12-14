@@ -21,8 +21,21 @@ const client = new ApolloClient({
     },
   }),
   initializers: {
-    isLoggedIn: () => !!localStorage.getItem('token'),
-    signUp: () => ({ __typename: 'SignUpState', success: false, email: '' }),
+    logIn: () => ({
+      __typename: 'LogInState',
+      isLoggedIn: false,
+      user: {
+        __typename: 'User',
+        email: '',
+        token: '',
+        confirmed: false
+      }
+    }),
+    signUp: () => ({
+      __typename: 'SignUpState',
+      success: false,
+      email: ''
+    }),
     // signUp: () => ({ __typename: 'SignUpState', error: '', message: '' })
   },
 });
