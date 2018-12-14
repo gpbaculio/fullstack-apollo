@@ -1,108 +1,49 @@
-import React, { Component } from 'react'
-import isEmail from 'validator/lib/isEmail'
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardHeader,
-  CardBody,
-  Button
-} from 'reactstrap'
+import React from 'react'
+import { Mutation, ApolloConsumer } from 'react-apollo';
+import gql from 'graphql-tag';
 
-class Welcome extends Component {
+import { SignUpForm } from '../Forms'
+import Loading from '../Loading'
 
-  state = {
-    data: {
-      email: "",
-      password: ""
-    },
-    errors: {},
-    loading: false,
-  };
-
-  onChange = e => {
-    const { data } = this.state
-    const { name, value } = e.target
-    this.setState({
-      data: { ...data, [name]: value }
-    });
+const SIGNUP_USER = gql`
+  mutation signUp($email: String!, $password: String!) {
+    signUp(email: $email, password: $password)
   }
+`;
 
-  onSubmit = async (e) => {
-    e.preventDefault();
-    console.log('submit!')
-  };
+function Welcome() {
+  return (
+    <ApolloConsumer>
+      {client => (
+        <Mutation
+          mutation={SIGNUP_USER}
+          onCompleted={() => {
+            client.writeData({
+              data: {
+                signUp: { __typename: 'SignUpState', success: true, message: 'Sign Up Successful' }
+              }
+            });
+          }}
+          onError={() => {
+            client.writeData({
+              data: {
+                signUp: { __typename: 'SignUpState', success: false, message: 'Sign Up Failed' }
+              }
+            });
+          }}
+        >
+          {(signUp, attr = {}) => {
+            // this loading state will probably never show, but it's helpful to
+            // have for testing
+            if (attr.loading) return <Loading loading={attr.loading} />;
+            if (attr.error) return <p>An error occurred</p>;
 
-  validate = data => {
-    const errors = {};
-    if (!isEmail(data.email)) errors.email = "Invalid email";
-    if (!data.password) errors.password = "Can't be blank";
-    return errors;
-  };
-
-  render() {
-    const {
-      data,
-      errors,
-      loading
-    } = this.state;
-    return (
-      <Container style={{ height: "100vh" }}>
-        <Row className="align-items-center justify-content-center" style={{ height: "100vh" }}>
-          <Col xs="12" sm="8" lg="6">
-            <Card>
-              <CardHeader><h4 className="mb-0">Join the Club!</h4></CardHeader>
-              <CardBody>
-                <form onSubmit={this.onSubmit}>
-                  <div className="form-group">
-                    <label className="form-label w-100" htmlFor="email">
-                      Email
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={data.email}
-                        onChange={this.onChange}
-                        className={
-                          errors.email ? "form-control is-invalid" : "form-control"
-                        }
-                      />
-                      <div className="invalid-feedback">{errors.email}</div>
-                    </label>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label w-100" htmlFor="password">
-                      Password
-                      <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={data.password}
-                        onChange={this.onChange}
-                        className={
-                          errors.password ? "form-control is-invalid" : "form-control"
-                        }
-                      />
-                      <div className="invalid-feedback">{errors.password}</div>
-                    </label>
-                  </div>
-                  <Button
-                    disabled={loading}
-                    type="submit"
-                    color="primary"
-                    className="btn-block"
-                  >
-                    Sign Up
-                  </Button>
-                </form>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    )
-  }
+            return <SignUpForm signUp={signUp} />;
+          }}
+        </Mutation>
+      )}
+    </ApolloConsumer>
+  )
 }
 
 export default Welcome

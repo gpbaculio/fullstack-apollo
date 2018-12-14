@@ -6,11 +6,10 @@ import { sendConfirmationEmail } from '../mailer'
 const router = express.Router()
 
 router.post('/', async (req, res) => {
-    console.log('req = ', req.body)
-    const { email, password } = req.body.user
+    const { email, password } = req.body
     const user = await User.findOne({ email: email.toLowerCase() });
     if (user) {
-        res.status(400).json({ error: 'Email already used' })
+        res.json({ error: 'Email already used' })
     } else {
         const newUser = new User({ email })
         newUser.setPassword(password)
