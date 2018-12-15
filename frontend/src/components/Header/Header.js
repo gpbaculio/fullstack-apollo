@@ -40,6 +40,7 @@ const IS_LOGGED_IN = gql`
 `;
 
 class Header extends Component {
+
   state = {
     isOpen: false
   };
@@ -69,6 +70,9 @@ class Header extends Component {
                         </NavItem>
                         <NavItem>
                           <Button
+                            size="sm"
+                            color="primary"
+                            className="ml-2"
                             onClick={() => {
                               client.writeData({
                                 data: {
