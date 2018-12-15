@@ -7,19 +7,37 @@ class Api extends RESTDataSource {
   }
 
   async logIn({ email, password }) {
-    const response = await this.post('/auth', { email, password });
-    return {
-      user: response.user,
-      error: response.error
-    };
+    const { user, error } = await this.post('/auth', { email, password });
+    return ({
+      user,
+      error
+    });
   }
 
   async signUp({ email, password }) {
     const response = await this.post('/user', { email, password })
-    return {
+    return ({
       error: response.error,
       email: response.email
-    }
+    })
+  }
+
+  async addTodo({ text, userId }) {
+    const { todo } = await this.post('/todo', { text, userId })
+    const {
+      _id: id,
+      complete,
+      createdAt,
+      updatedAt
+    } = todo
+    return ({
+      id,
+      text: todo.text,
+      complete,
+      userId: todo.userId._id,
+      createdAt,
+      updatedAt
+    })
   }
 }
 

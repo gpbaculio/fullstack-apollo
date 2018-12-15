@@ -12,6 +12,7 @@ const typeDefs = gql`
   type Mutation {
     signUp(email: String!, password: String!): SignUpResponse!
     logIn(email: String!, password: String!): LogInResponse!
+    addTodo(text: String!): TodoResponse!
   }
   type SignUpResponse {
     error: String
@@ -26,6 +27,17 @@ const typeDefs = gql`
     confirmed: Boolean!
     token: String!
     email: String!
+  }
+  type TodoResponse {
+    todo: Todo
+  }
+  type Todo {
+    id: ID!
+    text: String!
+    complete: Boolean!
+    userId: String!
+    createdAt: String!
+    updatedAt: String!
   }
 `;
 

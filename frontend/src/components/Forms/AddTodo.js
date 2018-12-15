@@ -17,7 +17,12 @@ class AddTodo extends Component {
 
   onSubmit = async (e) => {
     e.preventDefault()
-    console.log('add submit')
+    const { addTodo } = this.props
+    const { text } = this.state
+    if(text){
+      await addTodo({ variables: { text:text.trim() } })
+      this.setState({ text: '' });
+    }
   };
 
   render() {

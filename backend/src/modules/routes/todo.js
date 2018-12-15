@@ -5,7 +5,7 @@ import { authenticate } from '../middlewares'
 const router = express.Router()
 
 router.post('/', async (req, res) => {
-  const { todoText: text, userId } = req.body;
+  const { text, userId } = req.body;
   const newTodo = await new Todo({ text, userId });
   newTodo
     .save()
