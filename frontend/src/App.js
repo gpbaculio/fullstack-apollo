@@ -7,7 +7,8 @@ import {
   Home,
   Welcome,
   Confirmation,
-  Header
+  Header,
+  Loading
 } from './components'
 
 const IS_LOGGED_IN = gql`
@@ -33,8 +34,10 @@ function App() {
     <ApolloConsumer>
       {client => (
         <Query query={FETCH_VIEWER}>
-          {({ data: { viewer } }) => {
-            console.log('viewer = ', viewer)
+          {({ data: { viewer }, loading }) => {
+            if (loading) {
+              return <Loading loading={loading} />
+            }
             if (viewer) {
               client.writeData({
                 data: { logIn: { __typename: 'LogInState', isLoggedIn: true, user: { __typename: 'User', id: viewer.id, email: viewer.email, confirmed: viewer.confirmed } } }
