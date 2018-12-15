@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Mutation, ApolloConsumer } from 'react-apollo'
+import React, { Component, Fragment } from 'react'
+import { Mutation, ApolloConsumer, Query } from 'react-apollo'
 import gql from 'graphql-tag';
 import {
   Collapse,
@@ -8,7 +8,8 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  Container
+  Container,
+  Button
 } from 'reactstrap';
 
 import { LogInForm } from '../Forms'
@@ -22,6 +23,17 @@ const LOGIN_USER = gql`
         confirmed
         email
         token
+      }
+    }
+  }
+`;
+
+const IS_LOGGED_IN = gql`
+  query LogInState {
+    logIn @client {
+      isLoggedIn
+      user {
+        email
       }
     }
   }
@@ -47,34 +59,67 @@ class Header extends Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              <NavItem className="login-container">
-                <ApolloConsumer>
-                  {client => (
-                    <Mutation
-                      mutation={LOGIN_USER}
-                      onCompleted={({ logIn }) => {
-                        if (logIn.error === null) {
-                          localStorage.setItem('token', logIn.user.token)
-                          client.writeData({
-                            data: {
-                              logIn: {
-                                __typename: 'LogInState',
-                                isLoggedIn: true,
-                                user: { ...logIn.user }
-                              }
+              <ApolloConsumer>
+                {client => (
+                  <Query query={IS_LOGGED_IN}>
+                    {({ data: { logIn: { isLoggedIn, user } } }) => isLoggedIn && user ? (
+                      <Fragment>
+                        <NavItem>
+                          {user.email}
+                        </NavItem>
+                        <NavItem>
+                          <Button
+                            onClick={() => {
+                              client.writeData({
+                                data: {
+                                  logIn: {
+                                    __typename: 'LogInState',
+                                    isLoggedIn: false,
+                                    user: null
+                                  }
+                                }
+                              });
+                              localStorage.clear();
+                            }}
+                          >
+                            Logout
+                          </Button>
+                        </NavItem>
+                      </Fragment>
+                    ) : (
+                        <Mutation
+                          mutation={LOGIN_USER}
+                          onCompleted={({ logIn }) => {
+                            if (logIn.error === null) {
+                              localStorage.setItem('token', logIn.user.token)
+                              client.writeData({
+                                data: {
+                                  logIn: {
+                                    __typename: 'LogInState',
+                                    isLoggedIn: true,
+                                    user: {
+                                      __typename: 'User',
+                                      ...logIn.user
+                                    }
+                                  }
+                                }
+                              });
                             }
-                          });
-                        }
-                      }}
-                    >
-                      {(logIn, attr = {}) => {
-                        if (attr.error) return <p>An error occurred</p>;
-                        return <LogInForm {...attr} logIn={logIn} />
-                      }}
-                    </Mutation>
-                  )}
-                </ApolloConsumer>
-              </NavItem>
+                          }}
+                        >
+                          {(logIn, attr = {}) => {
+                            if (attr.error) return <p>An error occurred</p>;
+                            return (
+                              <NavItem className="login-container">
+                                <LogInForm {...attr} logIn={logIn} />
+                              </NavItem>
+                            )
+                          }}
+                        </Mutation>
+                      )}
+                  </Query>
+                )}
+              </ApolloConsumer>
             </Nav>
           </Collapse>
         </Container>
