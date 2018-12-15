@@ -7,8 +7,11 @@ class Api extends RESTDataSource {
   }
 
   async logIn({ email, password }) {
-    const { data } = await this.post('/auth', { email, password });
-    return data.user;
+    const response = await this.post('/auth', { email, password });
+    return {
+      user: response.user,
+      error: response.error
+    };
   }
 
   async signUp({ email, password }) {

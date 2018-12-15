@@ -17,6 +17,7 @@ const dataSources = () => ({
 const context = async ({ req }) => {
   // simple auth check on every request
   const { user } = await getUser(req.headers.authorization);
+  console.log('context user = ', user)
   return { user };
 };
 

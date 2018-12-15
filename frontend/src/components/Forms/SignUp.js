@@ -11,15 +11,6 @@ import {
 } from 'reactstrap'
 import isEmail from 'validator/lib/isEmail'
 
-// const SIGN_UP = gql`
-//   query signUp {
-//     signUp @client {
-//       success
-//       message
-//     }
-//   }
-// `;
-
 class SignUp extends Component {
 
   state = {
@@ -69,15 +60,8 @@ class SignUp extends Component {
     return formErrors;
   };
 
-  clearAler = () => {
-    this.setState({ formErrors: { email: '' } })
-  }
-
   render() {
-    const {
-      data,
-      formErrors,
-    } = this.state;
+    const { data, formErrors } = this.state;
     const { loading } = this.props
     return (
       <Container style={{ height: "75vh" }}>

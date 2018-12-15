@@ -11,13 +11,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
+const token = localStorage.getItem('token')
 const cache = new InMemoryCache();
 const client = new ApolloClient({
   cache,
   link: new HttpLink({
     uri: 'http://localhost:8000/graphql',
     headers: {
-      authorization: localStorage.getItem('token'),
+      authorization: token,
     },
   }),
   initializers: {
@@ -27,8 +28,9 @@ const client = new ApolloClient({
       user: {
         __typename: 'User',
         email: '',
-        token: '',
-        confirmed: false
+        token,
+        confirmed: false,
+        id: ''
       }
     }),
     signUp: () => ({
@@ -36,7 +38,6 @@ const client = new ApolloClient({
       success: false,
       email: ''
     }),
-    // signUp: () => ({ __typename: 'SignUpState', error: '', message: '' })
   },
 });
 

@@ -14,9 +14,10 @@ export const typeDefs = gql`
     user: User!
   }
   extend type User {
+    id: ID!
     email: String!
     confirmed: Boolean!
-    token: String!
+    token: String
   }
 `;
 

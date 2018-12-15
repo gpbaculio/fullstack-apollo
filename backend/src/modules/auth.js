@@ -3,14 +3,29 @@ import User from './models/User';
 
 export async function getUser(token) {
   if (!token) {
-    return ({ user: null });
+    return { user: null };
   }
   try {
-    const decodedToken = jwt.verify(token.substring(7), process.env.JWT_SECRET);
-    const user = await User.findOne({ _id: decodedToken._id });
-    return ({ user });
+    const { id } = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne(
+      { _id: id },
+      {
+        password: 0,
+        createdAt: 0,
+        updatedAt: 0,
+        __v: 0,
+        confirmationToken: 0
+      }
+    );
+    return ({
+      user: {
+        id: user._id.toString(), // _id by default is object id, not string
+        email: user.email,
+        confirmed: user.confirmed
+      }
+    });
   } catch (err) {
-    return ({ user: null });
+    return { user: null };
   }
 }
 

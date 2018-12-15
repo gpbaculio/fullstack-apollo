@@ -35,7 +35,7 @@ schema.methods.setPassword = function setPassword(password) {
 
 schema.methods.generateJWT = function generateJWT() {
     return jwt.sign(
-        { email: this.email },
+        { id: this._id },
         process.env.JWT_SECRET,
     )
 }
@@ -50,6 +50,7 @@ schema.methods.generateConfirmationUrl = function generateConfirmationUrl() {
 
 schema.methods.toAuthJSON = function toAuthJSON() {
     return {
+        id: this._id,
         email: this.email,
         token: this.generateJWT(),
         confirmed: this.confirmed

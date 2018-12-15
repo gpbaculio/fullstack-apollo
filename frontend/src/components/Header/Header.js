@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { Mutation, ApolloConsumer } from 'react-apollo'
+import gql from 'graphql-tag';
 import {
   Collapse,
   Navbar,
@@ -6,13 +8,24 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  Button,
-  Form,
-  FormGroup,
-  Label,
-  Input,
   Container
 } from 'reactstrap';
+
+import { LogInForm } from '../Forms'
+
+const LOGIN_USER = gql`
+  mutation LogIn($email: String!, $password: String!) {
+    logIn(email: $email, password: $password) {
+      error
+      user {
+        id
+        confirmed
+        email
+        token
+      }
+    }
+  }
+`;
 
 class Header extends Component {
   state = {
@@ -35,17 +48,32 @@ class Header extends Component {
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto" navbar>
               <NavItem className="login-container">
-                <Form className="header-login-form" inline>
-                  <FormGroup className="header-email-container mr-sm-2 mb-0">
-                    <Label for="exampleEmail" className="mr-sm-2">Email</Label>
-                    <Input type="email" name="email" id="exampleEmail" placeholder="something@idk.cool" bsSize="sm" />
-                  </FormGroup>
-                  <FormGroup className="header-password-container mr-sm-2 mb-0">
-                    <Label for="examplePassword" className="mr-sm-2">Password</Label>
-                    <Input type="password" name="password" id="examplePassword" placeholder="don't tell!" bsSize="sm" />
-                  </FormGroup>
-                  <Button className="header-login-button" color="primary" size="sm">Log In</Button>
-                </Form>
+                <ApolloConsumer>
+                  {client => (
+                    <Mutation
+                      mutation={LOGIN_USER}
+                      onCompleted={({ logIn }) => {
+                        if (logIn.error === null) {
+                          localStorage.setItem('token', logIn.user.token)
+                          client.writeData({
+                            data: {
+                              logIn: {
+                                __typename: 'LogInState',
+                                isLoggedIn: true,
+                                user: { ...logIn.user }
+                              }
+                            }
+                          });
+                        }
+                      }}
+                    >
+                      {(logIn, attr = {}) => {
+                        if (attr.error) return <p>An error occurred</p>;
+                        return <LogInForm {...attr} logIn={logIn} />
+                      }}
+                    </Mutation>
+                  )}
+                </ApolloConsumer>
               </NavItem>
             </Nav>
           </Collapse>
