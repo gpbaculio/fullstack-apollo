@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate'
+import toJson from '@meanie/mongoose-to-json'
 
 const TodoSchema = new mongoose.Schema(
   {
@@ -24,5 +25,6 @@ const TodoSchema = new mongoose.Schema(
 );
 
 TodoSchema.plugin(mongoosePaginate);
+TodoSchema.plugin(toJson)
 
 export default mongoose.model('Todo', TodoSchema)

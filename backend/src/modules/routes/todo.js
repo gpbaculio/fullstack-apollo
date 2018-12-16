@@ -1,6 +1,5 @@
 import express from 'express'
 import { Todo } from '../models'
-import { authenticate } from '../middlewares'
 
 const router = express.Router()
 
@@ -72,18 +71,18 @@ router.post('/update_text', async (req, res) => {
   );
 })
 
-router.get("/fetchTodos", authenticate, async (req, res) => {
-  const { _id: userId } = req.currentUser
-  const { offset, limit, searchText, complete } = req.query
-  const query = { userId };
-  if (searchText) {
-    query.text = { '$regex': `${searchText}`, '$options': 'i' }
-  }
-  if (complete) {
-    query.complete = complete
-  }
+router.get("/fetchTodos", async (req, res) => {
+  const { id, offset, limit } = req.query
+  console.log('fetchtodos req query = ', req.query)
+  const squery = { userId: id };
+  // if (search) {
+  //   query.text = { '$regex': `${search}`, '$options': 'i' }
+  // }
+  // if (complete) {
+  //   query.complete = complete
+  // }
   Todo.paginate(
-    query,
+    squery,
     {
       offset: parseFloat(offset),
       limit: parseFloat(limit),

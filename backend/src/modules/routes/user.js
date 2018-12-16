@@ -1,6 +1,5 @@
 import express from "express";
 import { User } from '../models'
-import { authenticate } from '../middlewares'
 import { sendConfirmationEmail } from '../mailer'
 
 const router = express.Router()
@@ -22,20 +21,5 @@ router.post('/', async (req, res) => {
             })
     }
 })
-
-router.get("/current_user", authenticate, (req, res) => {
-    const { _id: id, email, confirmed } = req.currentUser
-    if (id) {
-        res.json({
-            user: {
-                email,
-                confirmed,
-                id,
-            }
-        });
-    } else {
-        res.status(400).json({ error: 'failed to retrieve user' })
-    }
-});
 
 export default router

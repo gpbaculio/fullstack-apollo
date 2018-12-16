@@ -1,9 +1,12 @@
 export default {
   Query: {
-    viewer: async (_root, _args, { user }) => user,
-    fetchTodos: async (_root, { page, sort, limit }, { user: { id: userId }, dataSources: { api } }) => {
-      const offset = (page - 1) * 9
-      const query = { page, limit: 9, offset }
+    viewer: async (_root, { page, sort, limit, search }, { user, dataSources: { api } }) => {
+      if (!user) return null
+      const query = {
+        limit: 9,
+        offset: (page - 1) * 9,
+        search
+      }
       if (limit) {
         query.limit = limit
       }
@@ -14,9 +17,9 @@ export default {
       } else {
         query.complete = true
       }
-      const response = await api.fetchTodos({ userId, query });
-      return response
-    }
+      const response = await api.fetchTodos({ user, query });
+      return ({ id: user.id, email: user.email, confirmed: user.confirmed, todos: response })
+    },
   },
   Mutation: {
     signUp: async (_root, { email, password }, { dataSources: { api } }) => {

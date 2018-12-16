@@ -8,6 +8,7 @@
     "start": "babel-node src/index.js"
   },
   "dependencies": {
+    "@meanie/mongoose-to-json": "^2.3.0",
     "apollo": "^2.1.8",
     "apollo-datasource-rest": "^0.2.1",
     "apollo-link": "^1.2.4",
@@ -16,6 +17,7 @@
     "apollo-server-express": "^2.2.6",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "bcrypt": "^3.0.2",
     "bluebird": "^3.5.3",
@@ -35,6 +37,7 @@
     "mongoose-paginate": "^5.0.3",
     "nodemailer": "^4.7.0",
     "nodemon": "^1.18.8",
+    "normalizr": "^3.3.0",
     "serve-favicon": "^2.5.0"
   }
 }

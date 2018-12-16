@@ -20,8 +20,8 @@ const IS_LOGGED_IN = gql`
 `;
 
 const FETCH_VIEWER = gql`
-  query FetchViewer {
-    viewer {
+  query FetchViewer($page: Int!) {
+    viewer(page: $page) {
       id
       email
       confirmed
@@ -33,7 +33,7 @@ function App() {
   return (
     <ApolloConsumer>
       {client => (
-        <Query query={FETCH_VIEWER}>
+        <Query query={FETCH_VIEWER} variables={{ page: 1 }}>
           {({ data: { viewer }, loading }) => {
             if (loading) {
               return <Loading loading={loading} />

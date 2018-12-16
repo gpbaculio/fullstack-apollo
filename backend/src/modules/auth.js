@@ -8,7 +8,7 @@ export async function getUser(token) {
   try {
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne(
-      { _id: id },
+      { _id: id }, // user _id for finding query!
       {
         password: 0,
         createdAt: 0,
