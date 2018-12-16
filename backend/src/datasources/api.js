@@ -26,7 +26,7 @@ class Api extends RESTDataSource {
   async addTodo({ text, userId }) {
     const { todo } = await this.post('/todo', { text, userId })
     const {
-      id,
+      _id: id,
       complete,
       createdAt,
       updatedAt
@@ -35,21 +35,20 @@ class Api extends RESTDataSource {
       id,
       text: todo.text,
       complete,
-      userId: todo.userId.id,
+      userId: todo.userId._id,
       createdAt,
       updatedAt
     })
   }
 
-  async fetchTodos({ user, query: { offset, limit } }) {
-    if (!user) return null
-    const response = await this.get('/todo/fetchTodos', { id: user.id, offset, limit })
-    const todo = new schema.Entity('todos');;
-    const result = normalize(response, {
-      todos: [todo],
-    })
-    console.log('FETCH TODOS NORMALIZR = ', result)
-    return result
+  async fetchTodos({ user: { id }, query: { offset, limit } }) {
+    const response = await this.get('/todo/fetchTodos', { id, offset, limit })
+    // const todo = new schema.Entity('todos', { idAttribute: '_id' });;
+    // const result = normalize(response, {
+    //   todos: [todo],
+    // })
+    console.log('FETCH TODOS NORMALIZR = ', response)
+    return response
   }
 }
 

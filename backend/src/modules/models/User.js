@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import toJson from '@meanie/mongoose-to-json'
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -57,7 +56,5 @@ UserSchema.methods.toAuthJSON = function toAuthJSON() {
         confirmed: this.confirmed
     }
 }
-
-UserSchema.plugin(toJson)
 
 export default mongoose.model('User', UserSchema)
