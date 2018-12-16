@@ -39,6 +39,11 @@ class Api extends RESTDataSource {
       updatedAt
     })
   }
+
+  async fetchTodos({ page, sort, limit }) {
+    const response = this.get('/fetchTodos', { page, sort, limit })
+    return response
+  }
 }
 
 export default Api
