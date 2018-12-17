@@ -2,18 +2,15 @@ import gql from 'graphql-tag';
 
 export const typeDefs = gql`
   extend type Query {
-    logIn: LogInState!
+    isLoggedIn: Boolean!
     signUp: SignUpState!
+    currentUser: CurrentUser!
   }
   extend type SignUpState {
     success: Boolean!
     email: String!
   }
-  extend type LogInState {
-    isLoggedIn: Boolean
-    user: User!
-  }
-  extend type User {
+  extend type CurrentUser {
     id: ID!
     email: String!
     confirmed: Boolean!

@@ -12,16 +12,14 @@ import {
 } from './components'
 
 const IS_LOGGED_IN = gql`
-  query LogInState {
-    logIn @client {
-      isLoggedIn
-    }
+  query IsLoggedIn {
+    isLoggedIn @client 
   }
 `;
 
 const FETCH_VIEWER = gql`
-  query FetchViewer($page: Int!) {
-    viewer(page: $page) {
+  query FetchViewer {
+    viewer {
       id
       email
       confirmed
@@ -33,7 +31,7 @@ function App() {
   return (
     <ApolloConsumer>
       {client => (
-        <Query query={FETCH_VIEWER} variables={{ page: 1 }}>
+        <Query query={FETCH_VIEWER}>
           {({ data: { viewer }, loading }) => {
             if (loading) {
               return <Loading loading={loading} />
@@ -41,15 +39,12 @@ function App() {
             if (viewer) {
               client.writeData({
                 data: {
-                  logIn: {
-                    __typename: 'LogInState',
-                    isLoggedIn: true,
-                    user: {
-                      __typename: 'User',
-                      id: viewer.id,
-                      email: viewer.email,
-                      confirmed: viewer.confirmed
-                    }
+                  isLoggedIn: true,
+                  currentUser: {
+                    __typename: 'CurrentUser',
+                    id: viewer.id,
+                    email: viewer.email,
+                    confirmed: viewer.confirmed,
                   }
                 }
               })
@@ -58,7 +53,7 @@ function App() {
               <Fragment>
                 <Header />
                 <Query query={IS_LOGGED_IN}>
-                  {({ data: { logIn: { isLoggedIn } } }) => isLoggedIn ? (
+                  {({ data: { isLoggedIn } }) => isLoggedIn ? (
                     <Router primary={false} component={Fragment}>
                       <Home path="/" />
                     </Router>

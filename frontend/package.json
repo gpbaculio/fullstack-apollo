@@ -17,6 +17,8 @@
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.11.1",
     "graphql-tag": "^2.10.0",
+    "lodash": "^4.17.11",
+    "normalizr": "^3.3.0",
     "prop-types": "^15.6.2",
     "react": "^16.6.3",
     "react-apollo": "^2.3.2",

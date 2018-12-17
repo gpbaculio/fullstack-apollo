@@ -1,5 +1,4 @@
 import { RESTDataSource } from 'apollo-datasource-rest';
-import { normalize, schema } from "normalizr";
 
 class Api extends RESTDataSource {
   constructor() {
@@ -43,11 +42,6 @@ class Api extends RESTDataSource {
 
   async fetchTodos({ user: { id }, query: { offset, limit } }) {
     const response = await this.get('/todo/fetchTodos', { id, offset, limit })
-    // const todo = new schema.Entity('todos', { idAttribute: '_id' });;
-    // const result = normalize(response, {
-    //   todos: [todo],
-    // })
-    console.log('FETCH TODOS NORMALIZR = ', response)
     return response
   }
 }

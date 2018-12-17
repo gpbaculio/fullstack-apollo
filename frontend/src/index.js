@@ -22,22 +22,19 @@ const client = new ApolloClient({
     },
   }),
   initializers: {
-    logIn: () => ({
-      __typename: 'LogInState',
-      isLoggedIn: false,
-      user: {
-        __typename: 'User',
-        email: '',
-        token,
-        confirmed: false,
-        id: ''
-      }
-    }),
+    isLoggedIn: () => false,
     signUp: () => ({
       __typename: 'SignUpState',
       success: false,
       email: ''
     }),
+    currentUser: () => ({
+      __typename: 'CurrentUser',
+      email: '',
+      token,
+      confirmed: false,
+      id: '',
+    })
   },
 });
 

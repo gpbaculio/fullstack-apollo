@@ -2,10 +2,10 @@ import { gql } from 'apollo-server-express'
 
 const typeDefs = gql`
   type Query {
-    viewer(page: Int!): User
+    viewer(page: Int): User
   }
   type Todo {
-    id: ID!
+    _id: ID!
     text: String!
     complete: Boolean!
     userId: String!
@@ -17,6 +17,7 @@ const typeDefs = gql`
     email: String!
     confirmed: Boolean!
     todos: [Todo]
+    todosCount: Int
   }
   type Mutation {
     signUp(email: String!, password: String!): SignUpResponse!

@@ -28,13 +28,11 @@ const LOGIN_USER = gql`
   }
 `;
 
-const IS_LOGGED_IN = gql`
+const IS_LOGGED_IN_VIEWER = gql`
   query LogInState {
-    logIn @client {
-      isLoggedIn
-      user {
-        email
-      }
+    isLoggedIn @client 
+    viewer @client {
+      email
     }
   }
 `;
@@ -54,7 +52,12 @@ class Header extends Component {
   render() {
     const { isOpen } = this.state
     return (
-      <Navbar style={{ borderBottom: '1px solid rgba(0,0,0,.125)' }} color="light" light expand="lg">
+      <Navbar
+        style={{ borderBottom: '1px solid rgba(0,0,0,.125)' }}
+        color="light"
+        light
+        expand="lg"
+      >
         <Container className="my-2">
           <NavbarBrand href="/">Glendon Philipp Baculio</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
@@ -62,11 +65,11 @@ class Header extends Component {
             <Nav className="ml-auto" navbar>
               <ApolloConsumer>
                 {client => (
-                  <Query query={IS_LOGGED_IN}>
-                    {({ data: { logIn: { isLoggedIn, user } } }) => isLoggedIn && user ? (
+                  <Query query={IS_LOGGED_IN_VIEWER}>
+                    {({ data: { isLoggedIn, viewer } }) => isLoggedIn && viewer ? (
                       <Fragment>
                         <NavItem>
-                          {user.email}
+                          {viewer.email}
                         </NavItem>
                         <NavItem>
                           <Button
@@ -76,11 +79,8 @@ class Header extends Component {
                             onClick={() => {
                               client.writeData({
                                 data: {
-                                  logIn: {
-                                    __typename: 'LogInState',
-                                    isLoggedIn: false,
-                                    user: null
-                                  }
+                                  isLoggedIn: false,
+                                  viewer: null
                                 }
                               });
                               localStorage.clear();

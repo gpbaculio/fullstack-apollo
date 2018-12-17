@@ -73,8 +73,7 @@ router.post('/update_text', async (req, res) => {
 
 router.get("/fetchTodos", async (req, res) => {
   const { id, offset, limit } = req.query
-  console.log('fetchtodos req query = ', req.query)
-  const squery = { userId: id };
+  const query = { userId: id };
   // if (search) {
   //   query.text = { '$regex': `${search}`, '$options': 'i' }
   // }
@@ -82,7 +81,7 @@ router.get("/fetchTodos", async (req, res) => {
   //   query.complete = complete
   // }
   Todo.paginate(
-    squery,
+    query,
     {
       offset: parseFloat(offset),
       limit: parseFloat(limit),

@@ -17,8 +17,8 @@ export default {
       } else {
         query.complete = true
       }
-      const response = await api.fetchTodos({ user, query });
-      return ({ id: user.id, email: user.email, confirmed: user.confirmed, todos: response })
+      const { todos, count } = await api.fetchTodos({ user, query });
+      return ({ id: user.id, email: user.email, confirmed: user.confirmed, todos, todosCount: count })
     },
   },
   Mutation: {
