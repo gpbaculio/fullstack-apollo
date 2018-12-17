@@ -10,6 +10,7 @@ router.post('/', async (req, res) => {
     .save()
     .then(async ({ _id: id }) => {
       const todoWithUserRecord = await Todo.findOne({ _id: id }).populate('userId', '_id')
+      console.log('todoWithUserRecord = ', todoWithUserRecord)
       res.json({ todo: todoWithUserRecord })
     })
     .catch(error => res.status(400).json({ error }))

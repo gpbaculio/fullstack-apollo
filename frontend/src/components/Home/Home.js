@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Query, Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import {
@@ -9,7 +9,7 @@ import {
 } from 'reactstrap'
 
 import { AddTodo, Search } from '../Forms'
-import Loading from '../Loading'
+import Todos from './Todos';
 
 const VIEWER_DATA = gql`
   query Viewer {
@@ -23,7 +23,7 @@ const ADD_TODO = gql`
   mutation AddTodo($text: String!) {
     addTodo(text: $text) {
       todo {
-        id
+        _id
         text
         complete
         userId
@@ -33,22 +33,6 @@ const ADD_TODO = gql`
     }
   }
 `;
-
-const FETCH_TODOS = gql`
-  query FetchViewer($page: Int!) {
-    viewer(page: $page) {
-      todos {
-        id: _id #use alias for normalizr
-        complete
-        userId
-        createdAt
-        updatedAt
-        text
-      }
-      todosCount
-    }
-  }
-`
 
 function Home() {
   return (
@@ -79,21 +63,9 @@ function Home() {
           </Row>
         )}
       </Query>
-      <Query query={FETCH_TODOS} variables={{ page: 1 }}>
-        {({ data: { viewer }, loading, error, refetch }) => { // separate this into a different component tomorrow
-          if (loading) {
-            return <Loading loading={loading} />
-          }
-          if (error) {
-            return <p>Something went wrong.</p>
-          }
-          return (
-            <Fragment>
-              {viewer.todos.map(t => <p key={t.id}>{t.id}</p>)}
-            </Fragment>
-          )
-        }}
-      </Query>
+      <Row>
+        <Todos />
+      </Row>
     </Container>
   )
 }
