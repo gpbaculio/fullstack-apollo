@@ -54,7 +54,7 @@ function Home() {
   return (
     <Container>
       <Query query={VIEWER_DATA}>
-        {({ data: { viewer: confirmed } }) => (
+        {({ data: { viewer: { confirmed } } }) => (
           <Row>
             <Col xs="12" md="6">
               {confirmed ? (
@@ -79,8 +79,8 @@ function Home() {
           </Row>
         )}
       </Query>
-      <Query query={FETCH_TODOS} variables={{ page: 1 }}> {/* separate this into a different component tomorrow! */}
-        {({ data: { viewer }, loading, error, refetch }) => {
+      <Query query={FETCH_TODOS} variables={{ page: 1 }}>
+        {({ data: { viewer }, loading, error, refetch }) => { // separate this into a different component tomorrow
           if (loading) {
             return <Loading loading={loading} />
           }
@@ -89,7 +89,7 @@ function Home() {
           }
           return (
             <Fragment>
-              {viewer.todos.map(t => <p>{t.id}</p>)}
+              {viewer.todos.map(t => <p key={t.id}>{t.id}</p>)}
             </Fragment>
           )
         }}
