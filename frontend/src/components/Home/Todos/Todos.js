@@ -41,21 +41,15 @@ class Todos extends Component {
             const { todosCount, todos } = viewer
             return (
               <Container>
-                <div style={{
-                  display: 'grid',
-                  width: '100%',
-                  gridAutoRows: 'minmax(60vh, auto)'
-                }}>
-                  <Row>
-                    {loading ? (
-                      <Loading loading={loading} />
-                    ) : (
-                        todos.map(todo => (
-                          <Todo key={todo.id} todo={todo} />
-                        )))}
-                  </Row>
-                </div>
-                <Row className="justify-content-center">
+                <Row style={{ minHeight: '60vh' }}>
+                  {loading ? (
+                    <Loading loading={loading} />
+                  ) : (
+                      todos.map(todo => (
+                        <Todo key={todo.id} todo={todo} />
+                      )))}
+                </Row>
+                <Row className="justify-content-center mt-2">
                   <Pagination
                     activePage={activePage}
                     itemsCountPerPage={9}

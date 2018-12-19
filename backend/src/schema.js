@@ -8,7 +8,6 @@ const typeDefs = gql`
     _id: ID!
     text: String!
     complete: Boolean!
-    userId: String!
     createdAt: String!
     updatedAt: String!
   }
@@ -19,10 +18,15 @@ const typeDefs = gql`
     todos: [Todo]
     todosCount: Int
   }
+  input UpdateTodoTextInput {
+    id: String!
+    text: String!
+  }
   type Mutation {
     signUp(email: String!, password: String!): SignUpResponse!
     logIn(email: String!, password: String!): LogInResponse!
     addTodo(text: String!): AddTodoResponse!
+    updateTodoText(input: UpdateTodoTextInput!): UpdateTodoTextResponse!
   }
   type SignUpResponse {
     error: String
@@ -39,6 +43,9 @@ const typeDefs = gql`
     email: String!
   }
   type AddTodoResponse {
+    todo: Todo
+  }
+  type UpdateTodoTextResponse {
     todo: Todo
   }
 `;

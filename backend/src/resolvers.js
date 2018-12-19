@@ -46,6 +46,12 @@ export default {
       return ({
         todo
       })
+    },
+    updateTodoText: async (_root, { input }, { dataSources: { api }, user: { id: userId } }) => {
+      const todo = await api.updateTodoText({ input, userId })
+      return ({
+        todo
+      })
     }
   },
 };

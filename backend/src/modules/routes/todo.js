@@ -8,10 +8,9 @@ router.post('/', async (req, res) => {
   const newTodo = await new Todo({ text, userId });
   newTodo
     .save()
-    .then(async ({ _id: id }) => {
-      const todoWithUserRecord = await Todo.findOne({ _id: id }).populate('userId', '_id')
-      console.log('todoWithUserRecord = ', todoWithUserRecord)
-      res.json({ todo: todoWithUserRecord })
+    .then(async ({ _id }) => {
+      const todo = await Todo.findOne({ _id })
+      res.json({ todo })
     })
     .catch(error => res.status(400).json({ error }))
 })
@@ -56,8 +55,8 @@ router.post('/delete_completed', async (req, res) => {
   });
 })
 
-router.post('/update_text', async (req, res) => {
-  const { id, userId, text } = req.body;
+router.post('/updateText', async (req, res) => {
+  const { input: { id, text }, userId } = req.body;
   await Todo.findOneAndUpdate(
     { _id: id, userId },
     { $set: { text } },
