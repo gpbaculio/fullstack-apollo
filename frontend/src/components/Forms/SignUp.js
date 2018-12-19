@@ -64,8 +64,8 @@ class SignUp extends Component {
     const { data, formErrors } = this.state;
     const { loading } = this.props
     return (
-      <Container style={{ height: "75vh" }}>
-        <Row className="align-items-center justify-content-center" style={{ height: "75vh" }}>
+      <Container style={{ height: 'calc(100vh - 72px)' }}>
+        <Row className="align-items-center justify-content-center" style={{ height: "inherit" }}>
           <Col xs="12" sm="8" lg="6">
             <Card>
               <CardHeader>

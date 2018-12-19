@@ -10,13 +10,16 @@ const override = css`
 `;
 
 const Loading = ({ loading }) => (
-  <ClipLoader
-    className={override}
-    sizeUnit="px"
-    size={100}
-    color='#123abc'
-    loading={loading}
-  />
+  <div className="loading-container">
+    <ClipLoader
+      style={{ margin: 'auto', position: 'relative' }}
+      className={override}
+      sizeUnit="px"
+      size={100}
+      color='#123abc'
+      loading={loading}
+    />
+  </div>
 )
 
 Loading.propTypes = {

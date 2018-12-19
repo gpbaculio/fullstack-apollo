@@ -1,6 +1,6 @@
 export default {
   Query: {
-    viewer: async (_root, { page, sort, limit, search }, { user, dataSources: { api } }) => {
+    viewer: async (_root, { page = 1, sort, limit, search }, { user, dataSources: { api } }) => {
       if (!user) return null
       const query = {
         limit: 9,

@@ -34,13 +34,18 @@ const client = new ApolloClient({
       token,
       confirmed: false,
       id: '',
+    }),
+    pagination: () => ({
+      __typename: 'Pagination',
+      activePage: 1,
+      todosCount: 0
     })
   },
 });
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <App />
+    <App style={{ height: '100%', width: '100%' }} />
   </ApolloProvider>,
   document.getElementById('root')
 );

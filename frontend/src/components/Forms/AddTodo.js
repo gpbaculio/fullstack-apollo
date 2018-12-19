@@ -32,9 +32,7 @@ class AddTodo extends Component {
       <Form
         className="
           mx-auto
-          mt-4
-          mb-xs-1
-          mb-md-5
+          my-3
           align-items-start
         "
         onSubmit={this.onSubmit}

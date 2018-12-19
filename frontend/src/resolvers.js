@@ -5,6 +5,7 @@ export const typeDefs = gql`
     isLoggedIn: Boolean!
     signUp: SignUpState!
     currentUser: CurrentUser!
+    pagination: Pagination!
   }
   extend type SignUpState {
     success: Boolean!
@@ -15,6 +16,10 @@ export const typeDefs = gql`
     email: String!
     confirmed: Boolean!
     token: String
+  }
+  extend type Pagination {
+    activePage: Int!
+    todosCount: Int!
   }
 `;
 
