@@ -19,7 +19,7 @@ const typeDefs = gql`
     todosCount: Int
   }
   input UpdateTodoTextInput {
-    id: String!
+    _id: ID!
     text: String!
   }
   type Mutation {

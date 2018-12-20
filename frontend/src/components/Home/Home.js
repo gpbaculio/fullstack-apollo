@@ -26,7 +26,6 @@ const ADD_TODO = gql`
         _id
         text
         complete
-        userId
         createdAt
         updatedAt
       }

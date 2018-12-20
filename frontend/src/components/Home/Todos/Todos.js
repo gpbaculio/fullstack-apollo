@@ -43,10 +43,12 @@ class Todos extends Component {
               <Container>
                 <Row style={{ minHeight: '60vh' }}>
                   {loading ? (
-                    <Loading loading={loading} />
+                    <div className="position-relative w-100">
+                      <Loading loading={loading} />
+                    </div>
                   ) : (
                       todos.map(todo => (
-                        <Todo key={todo.id} todo={todo} />
+                        <Todo key={todo._id} todo={todo} />
                       )))}
                 </Row>
                 <Row className="justify-content-center mt-2">

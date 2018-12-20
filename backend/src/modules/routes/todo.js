@@ -56,9 +56,9 @@ router.post('/delete_completed', async (req, res) => {
 })
 
 router.post('/updateText', async (req, res) => {
-  const { input: { id, text }, userId } = req.body;
+  const { input: { _id, text }, userId } = req.body;
   await Todo.findOneAndUpdate(
-    { _id: id, userId },
+    { _id, userId },
     { $set: { text } },
     { new: true },
     (error, result) => {

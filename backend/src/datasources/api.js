@@ -24,40 +24,23 @@ class Api extends RESTDataSource {
 
   async addTodo({ text, userId }) {
     const { todo } = await this.post('/todo', { text, userId })
-    const {
-      _id,
-      complete,
-      createdAt,
-      updatedAt,
-    } = todo
     return ({
-      _id,
-      text: todo.text,
-      complete,
-      createdAt,
-      updatedAt,
+      todo
     })
   }
 
   async fetchTodos({ user: { id }, query: { offset, limit } }) {
-    const response = await this.get('/todo/fetchTodos', { id, offset, limit })
-    return response
+    const { todos, count } = await this.get('/todo/fetchTodos', { id, offset, limit })
+    return ({
+      count,
+      todos
+    })
   }
 
   async updateTodoText({ input, userId }) {
     const { todo } = await this.post('/todo/updateText', { input, userId })
-    const {
-      _id,
-      complete,
-      createdAt,
-      updatedAt,
-    } = todo
     return ({
-      _id,
-      text: todo.text,
-      complete,
-      createdAt,
-      updatedAt,
+      todo
     })
   }
 }

@@ -17,10 +17,10 @@ export default {
       } else {
         query.complete = true
       }
-      const five = Buffer.from((5).toString()).toString('base64')
-      console.log(five)
-      const decoded = Buffer.from(`${five}`, 'base64').toString('ascii')
-      console.log(decoded)
+      // const five = Buffer.from((5).toString()).toString('base64')
+      // console.log(five)
+      // const decoded = Buffer.from(`${five}`, 'base64').toString('ascii')
+      // console.log(decoded)
       const { todos, count } = await api.fetchTodos({ user, query });
       return ({ id: user.id, email: user.email, confirmed: user.confirmed, todos, todosCount: count })
     },
@@ -41,14 +41,13 @@ export default {
       })
     },
     addTodo: async (_root, { text }, { dataSources: { api }, user: { id: userId } }) => {
-      const todo = await api.addTodo({ text, userId })
-      console.log('add todo ', todo)
+      const { todo } = await api.addTodo({ text, userId })
       return ({
         todo
       })
     },
     updateTodoText: async (_root, { input }, { dataSources: { api }, user: { id: userId } }) => {
-      const todo = await api.updateTodoText({ input, userId })
+      const { todo } = await api.updateTodoText({ input, userId })
       return ({
         todo
       })

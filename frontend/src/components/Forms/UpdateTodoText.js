@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import { Input, Form } from 'reactstrap'
 import PropTypes from 'prop-types'
+import { Form, Input } from 'reactstrap'
 
-
-class EditTodoTextInput extends Component {
+class UpdateTodoTextInput extends Component {
 
   state = {
     text: ''
@@ -19,11 +18,12 @@ class EditTodoTextInput extends Component {
     const { text } = this.state
     const {
       handleIsEditing,
-      id,
-      text: textProp
+      _id,
+      text: textProp,
+      updateTodoText
     } = this.props
     if (text && text !== textProp) {
-      console.log('edit todo!')
+      updateTodoText({ _id, text })
     } else {
       this.setState({ text: textProp })
     }
@@ -52,11 +52,13 @@ class EditTodoTextInput extends Component {
   }
 }
 
-EditTodoTextInput.propTypes = {
+UpdateTodoTextInput.propTypes = {
   handleIsEditing: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
+  _id: PropTypes.string.isRequired,
+  updateTodoText: PropTypes.func.isRequired,
 }
 
 
-export default EditTodoTextInput
+export default UpdateTodoTextInput
+

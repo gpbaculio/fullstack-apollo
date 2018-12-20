@@ -12,7 +12,6 @@ const override = css`
 const Loading = ({ loading }) => (
   <div className="loading-container">
     <ClipLoader
-      style={{ margin: 'auto', position: 'relative' }}
       className={override}
       sizeUnit="px"
       size={100}
