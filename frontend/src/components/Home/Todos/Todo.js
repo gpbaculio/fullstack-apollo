@@ -20,8 +20,10 @@ const UPDATE_TODO_TEXT = gql`
       todo {
         __typename
         _id
-        text
+        complete
+        createdAt
         updatedAt
+        text
       }
     }
   }
@@ -91,6 +93,8 @@ class Todo extends Component {
                                 _id,
                                 text: input.text,
                                 updatedAt: new Date().toISOString(),
+                                complete,
+                                createdAt,
                               }
                             }
                           }

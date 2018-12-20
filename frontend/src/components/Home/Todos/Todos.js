@@ -15,9 +15,6 @@ const FETCH_TODOS = gql`
       }
       todosCount
     }
-    currentUser @client {
-      id
-    }
   }
   ${Todo.fragments.todo}
 `
@@ -36,11 +33,11 @@ class Todos extends Component {
     const { activePage } = this.state
     return (
       <Query query={FETCH_TODOS} variables={{ page: activePage }} pollInterval={50000}>
-        {({ data: { viewer, currentUser }, loading, error, refetch }) => {
+        {({ data: { viewer }, loading, error, refetch }) => {
           if (error) {
             return <p>Something went wrong.</p>
           }
-          if (viewer && currentUser) {
+          if (viewer) {
             const { todosCount, todos } = viewer
             return (
               <Container>

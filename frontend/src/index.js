@@ -15,6 +15,7 @@ import * as serviceWorker from './serviceWorker';
 const token = localStorage.getItem('token')
 const cache = new InMemoryCache({
   dataIdFromObject: object => {
+    console.log('object = ', object)
     switch (object.__typename) {
       case 'Todo': return object._id; // use `key` as the primary key
       default: return defaultDataIdFromObject(object); // fall back to default handling
