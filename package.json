@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "concurrently": "^4.1.0"
+    "concurrently": "^4.1.0",
+    "mongoose": "^5.4.0",
+    "mongoose-paginate": "git://github.com/zerok78/mongoose-paginate.git#version-5.0.4"
   },
   "scripts": {
     "dev": "concurrently --kill-others \"npm run backend\" \"npm run frontend\"",

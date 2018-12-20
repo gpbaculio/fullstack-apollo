@@ -46,6 +46,7 @@ function App() {
         return (
           <Query query={FETCH_VIEWER} variables={{ page }}>
             {({ data: { viewer }, loading }) => {
+              console.log('loading = ', loading)
               client.writeData({ data: { todosRefetching: loading } })
               if (viewer) {
                 client.writeData({
