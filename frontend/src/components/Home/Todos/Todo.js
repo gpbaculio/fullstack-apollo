@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Mutation } from 'react-apollo'
+import { Mutation, ApolloConsumer } from 'react-apollo'
 import gql from 'graphql-tag'
 import {
   Col,
@@ -21,13 +21,22 @@ const UPDATE_TODO_TEXT = gql`
         __typename
         _id
         text
-        complete
-        createdAt
         updatedAt
       }
     }
   }
 `;
+
+const todo = gql`
+fragment Todo on Todo {
+  __typename
+  _id
+  complete
+  createdAt
+  updatedAt
+  text
+}
+`
 
 class Todo extends Component {
 
@@ -45,7 +54,7 @@ class Todo extends Component {
     const { isEditing } = this.state
     const { todo: { _id, complete, createdAt, updatedAt, text } } = this.props
     return (
-      <Col lg="4" md="6" sm="12">
+      <ApolloConsumer>{client => <Col lg="4" md="6" sm="12">
         <Card className="mx-auto mt-4 w-75 p-3">
           <CardBody>
             <CardTitle className="d-flex justify-content-between">
@@ -58,10 +67,22 @@ class Todo extends Component {
                       _id={_id}
                       text={text}
                       handleIsEditing={this.handleIsEditing}
-                      updateTodoText={input =>
-                        mutate({
+                      updateTodoText={input => {
+                        client.writeFragment({ // we render todos on Todos component from client readQuery
+                          id: _id,
+                          fragment: todo,
+                          data: {
+                            __typename: 'Todo',
+                            _id,
+                            complete,
+                            createdAt,
+                            text: input.text,
+                            updatedAt: new Date().toISOString(),
+                          },
+                        });
+                        return mutate({
                           variables: { input: { ...input } },
-                          optimisticResponse: {
+                          optimisticResponse: { /* THIS WILL NOT WORK BECAUSE WE RENDER TODOS ON CLIENT! */
                             __typename: "Mutation",
                             updateTodoText: {
                               __typename: "UpdateTodoTextResponse",
@@ -69,11 +90,12 @@ class Todo extends Component {
                                 __typename: "Todo",
                                 _id,
                                 text: input.text,
-                                updatedAt: new Date().toISOString()
+                                updatedAt: new Date().toISOString(),
                               }
                             }
                           }
                         })
+                      }
                       }
                     />
                   )}
@@ -101,7 +123,8 @@ class Todo extends Component {
             </CardText>
           </CardBody>
         </Card>
-      </Col>
+      </Col>}</ApolloConsumer>
+
     )
   }
 }
@@ -117,15 +140,7 @@ Todo.propTypes = {
 }
 
 Todo.fragments = {
-  todo: gql`
-    fragment Todo on Todo {
-      _id
-      complete
-      createdAt
-      updatedAt
-      text
-    }
-  `
+  todo
 }
 
 export default Todo

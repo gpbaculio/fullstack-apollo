@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ApolloClient from 'apollo-client';
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
+
 
 import App from './App'
 
@@ -12,7 +13,9 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 const token = localStorage.getItem('token')
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  dataIdFromObject: object => object._id
+});
 const client = new ApolloClient({
   cache,
   link: new HttpLink({
@@ -39,7 +42,9 @@ const client = new ApolloClient({
       __typename: 'Pagination',
       activePage: 1,
       todosCount: 0
-    })
+    }),
+    todosRefetching: () => false,
+    page: () => 1
   },
 });
 

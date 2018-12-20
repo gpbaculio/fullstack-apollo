@@ -12,8 +12,8 @@ import { AddTodo, Search } from '../Forms'
 import Todos from './Todos';
 
 const VIEWER_DATA = gql`
-  query Viewer {
-    viewer @client {
+  query currentUser {
+    currentUser @client {
       confirmed
     }
   }
@@ -38,7 +38,7 @@ function Home() {
     <React.Fragment>
       <Container>
         <Query query={VIEWER_DATA}>
-          {({ data: { viewer: { confirmed } } }) => (
+          {({ data: { currentUser: { confirmed } } }) => (
             <Row>
               <Col xs="12" md="6">
                 {confirmed ? (

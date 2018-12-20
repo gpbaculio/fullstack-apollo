@@ -31,7 +31,7 @@ const LOGIN_USER = gql`
 const IS_LOGGED_IN_VIEWER = gql`
   query LogInState {
     isLoggedIn @client 
-    viewer @client {
+    currentUser @client {
       email
     }
   }
@@ -66,10 +66,10 @@ class Header extends Component {
               <ApolloConsumer>
                 {client => (
                   <Query query={IS_LOGGED_IN_VIEWER}>
-                    {({ data: { isLoggedIn, viewer } }) => isLoggedIn && viewer ? (
+                    {({ data: { isLoggedIn, currentUser } }) => isLoggedIn && currentUser ? (
                       <Fragment>
                         <NavItem>
-                          {viewer.email}
+                          {currentUser.email}
                         </NavItem>
                         <NavItem>
                           <Button
@@ -80,7 +80,7 @@ class Header extends Component {
                               client.writeData({
                                 data: {
                                   isLoggedIn: false,
-                                  viewer: null
+                                  currentUser: null
                                 }
                               });
                               localStorage.clear();

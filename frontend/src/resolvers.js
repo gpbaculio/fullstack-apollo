@@ -6,6 +6,8 @@ export const typeDefs = gql`
     signUp: SignUpState!
     currentUser: CurrentUser!
     pagination: Pagination!
+    todosRefetching: Boolean!
+    page: Int!
   }
   extend type SignUpState {
     success: Boolean!

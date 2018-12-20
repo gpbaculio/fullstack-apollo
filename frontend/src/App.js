@@ -11,49 +11,63 @@ import {
   Loading
 } from './components'
 
+import Todo from './components/Home/Todos/Todo'
+
 const IS_LOGGED_IN = gql`
   query IsLoggedIn {
     isLoggedIn @client 
   }
 `;
-
-const FETCH_VIEWER = gql`
-  query FetchViewer {
-    viewer {
+export const PAGE = gql`
+query page {
+  page @client 
+}
+`
+export const FETCH_VIEWER = gql`
+  query FetchViewer($page: Int) {
+    viewer(page: $page) {
       id
       email
       confirmed
+      todos {
+        ...Todo
+      }
+      todosCount
     }
   }
+  ${Todo.fragments.todo}
 `
 
 function App() {
   return (
     <ApolloConsumer>
-      {client => (
-        <Query query={FETCH_VIEWER}>
-          {({ data: { viewer }, loading }) => {
-            if (loading) {
-              return <Loading loading={loading} />
-            }
-            if (viewer) {
-              client.writeData({
-                data: {
-                  isLoggedIn: true,
-                  currentUser: {
-                    __typename: 'CurrentUser',
-                    id: viewer.id,
-                    email: viewer.email,
-                    confirmed: viewer.confirmed,
+      {client => {
+        const { page } = client.readQuery({ query: PAGE })
+        return (
+          <Query query={FETCH_VIEWER} variables={{ page }}>
+            {({ data: { viewer }, loading }) => {
+              client.writeData({ data: { todosRefetching: loading } })
+              if (viewer) {
+                client.writeData({
+                  data: {
+                    isLoggedIn: true,
+                    currentUser: {
+                      __typename: 'CurrentUser',
+                      id: viewer.id,
+                      email: viewer.email,
+                      confirmed: viewer.confirmed,
+                    }
                   }
-                }
-              })
-            }
-            return (
-              <Fragment>
-                <Header />
-                <Query query={IS_LOGGED_IN}>
-                  {({ data: { isLoggedIn } }) => isLoggedIn ? (
+                })
+              }
+              const { isLoggedIn } = client.readQuery({ query: IS_LOGGED_IN })
+              if (!isLoggedIn && loading) {
+                return <Loading loading={loading} />
+              }
+              return (
+                <Fragment>
+                  <Header />
+                  {isLoggedIn ? (
                     <Router primary={false} component={Fragment}>
                       <Home path="/" />
                     </Router>
@@ -63,12 +77,12 @@ function App() {
                         <Confirmation path="/confirmation/:token" />
                       </Router>
                     )}
-                </Query>
-              </Fragment>
-            )
-          }}
-        </Query>
-      )}
+                </Fragment>
+              )
+            }}
+          </Query>
+        )
+      }}
     </ApolloConsumer>
   )
 }
