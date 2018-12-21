@@ -45,7 +45,7 @@ const TOGGLE_COMPLETE = gql`
   mutation ToggleComplete($input: ToggleCompleteInput!) {
     toggleComplete(input: $input) {
       __typename
-      toggledTodos # the deleted _id
+      toggledIds # the deleted _id
     }
   }
 `;
@@ -73,7 +73,7 @@ class Todo extends Component {
               <Mutation mutation={TOGGLE_COMPLETE}>
                 {mutate => (
                   <Input
-                    onClick={() => {
+                    onChange={() => {
                       client.writeFragment({ // we render todos on Todos component from client readQuery
                         id: _id,
                         fragment: gql`
@@ -85,6 +85,7 @@ class Todo extends Component {
                         `,
                         data: {
                           __typename: 'Todo',
+                          _id,
                           complete: !complete,
                         },
                       });

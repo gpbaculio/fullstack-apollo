@@ -17,7 +17,7 @@ app.use('/api/user', user)
 app.use('/api/todo', todo)
 
 mongoose.Promise = Promise;
-mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true })
+mongoose.connect(process.env.MONGODB_URL)
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 

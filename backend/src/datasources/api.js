@@ -1,4 +1,5 @@
 import { RESTDataSource } from 'apollo-datasource-rest';
+import map from 'lodash/map'
 
 class Api extends RESTDataSource {
   constructor() {
@@ -54,7 +55,7 @@ class Api extends RESTDataSource {
   async toggleComplete({ input, user }) {
     const { _ids } = await this.post('/todo/toggleComplete', { input, user })
     return ({
-      _ids
+      _ids: map(_ids, ({ _id }) => _id)
     })
   }
 
