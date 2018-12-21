@@ -15,15 +15,15 @@ router.post('/', async (req, res) => {
     .catch(error => res.status(400).json({ error }))
 })
 
-router.post('/toggle_complete', async (req, res) => {
-  const { ids, userId, complete } = req.body;
+router.post('/toggleComplete', async (req, res) => {
+  const { input: { _ids, complete }, user: { id: userId } } = req.body;
   try {
     await Todo.updateMany(
-      { _id: { $in: ids }, userId },
+      { _id: { $in: _ids }, userId },
       { $set: { complete } },
       async () => {
         const todos = await Todo.find(
-          { _id: { $in: ids }, userId }
+          { _id: { $in: _ids }, userId }
         ).populate('userId', '_id');
         res.json({ todos })
       }

@@ -50,6 +50,13 @@ class Api extends RESTDataSource {
       _id
     })
   }
+
+  async toggleComplete({ input, user }) {
+    const { todos } = await this.post('/todo/toggleComplete', { input, user })
+    return ({
+      todos
+    })
+  }
 }
 
 export default Api

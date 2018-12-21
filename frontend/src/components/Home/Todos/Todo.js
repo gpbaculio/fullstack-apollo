@@ -6,7 +6,8 @@ import {
   Card,
   CardBody,
   CardTitle,
-  CardText
+  CardText,
+  Input
 } from 'reactstrap'
 import PropTypes from 'prop-types'
 import { Icon } from 'react-icons-kit'
@@ -40,6 +41,15 @@ const DELETE_TODO = gql`
   }
 `;
 
+const TOGGLE_COMPLETE = gql`
+  mutation ToggleComplete($input: ToggleCompleteInput!) {
+    toggleComplete(input: $input) {
+      __typename
+      toggledTodos # the deleted _id
+    }
+  }
+`;
+
 class Todo extends Component {
 
   state = {
@@ -59,7 +69,14 @@ class Todo extends Component {
       <ApolloConsumer>{client => <Col lg="4" md="6" sm="12">
         <Card className="mx-auto mt-4 w-75 p-3">
           <CardBody>
-            <CardTitle className="d-flex justify-content-between">
+            <CardTitle className="d-flex align-items-center justify-content-between">
+              <Input
+                onClick={() => {
+                  /** WORK ON MUTATE TOMORROW!! */
+                }}
+                checked={complete}
+                type="checkbox"
+              />
               {isEditing ? (
                 <Mutation
                   mutation={UPDATE_TODO_TEXT}
@@ -132,7 +149,8 @@ class Todo extends Component {
                             __typename: 'User',
                             ...viewer,
                             todos: viewer.todos.filter(t => t._id !== _id)
-                          }
+                          },
+                          todosCount: viewer.todosCount - 1
                         }
                       })
                       return mutate({
