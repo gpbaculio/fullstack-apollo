@@ -33,13 +33,15 @@ router.post('/toggle_complete', async (req, res) => {
   }
 })
 
-router.post('/delete', async (req, res) => {
-  const { id, userId } = req.body;
-  await Todo.findOneAndRemove({ _id: id, userId }, error => {
+router.post('/deleteTodo', async (req, res) => {
+  const { input: { _id }, user: { id: userId } } = req.body;
+  await Todo.findOneAndRemove({ _id, userId }, (error, todo) => {
+    console.log('todo = ', todo)
+    console.log('todo = ', todo._id)
     if (error) {
       res.status(400).json({ error })
     } else {
-      res.json('OK')
+      res.status(200).json({ _id: todo._id })
     }
   });
 })

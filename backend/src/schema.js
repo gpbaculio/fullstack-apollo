@@ -27,6 +27,13 @@ const typeDefs = gql`
     logIn(email: String!, password: String!): LogInResponse!
     addTodo(text: String!): AddTodoResponse!
     updateTodoText(input: UpdateTodoTextInput!): UpdateTodoTextResponse!
+    deleteTodo(input: DeleteTodoInput!): DeleteTodoResponse!
+  }
+  input DeleteTodoInput {
+    _id: ID!
+  }
+  type DeleteTodoResponse {
+    _id: ID!
   }
   type SignUpResponse {
     error: String

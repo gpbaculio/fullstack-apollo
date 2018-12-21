@@ -52,6 +52,10 @@ export default {
       return ({
         todo
       })
+    },
+    deleteTodo: async (_root, { input }, { dataSources: { api }, user }) => {
+      const { _id } = await api.deleteTodo({ input, user })
+      return ({ _id })
     }
   },
 };

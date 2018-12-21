@@ -43,6 +43,13 @@ class Api extends RESTDataSource {
       todo
     })
   }
+
+  async deleteTodo({ input, user }) {
+    const { _id } = await this.post('/todo/deleteTodo', { input, user })
+    return ({
+      _id
+    })
+  }
 }
 
 export default Api

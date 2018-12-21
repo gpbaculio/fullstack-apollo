@@ -9,9 +9,13 @@ import {
   CardText
 } from 'reactstrap'
 import PropTypes from 'prop-types'
+import { Icon } from 'react-icons-kit'
+import { remove } from 'react-icons-kit/fa/remove'
 
 import { UpdateTodoText } from '../../Forms'
 import { timeDifferenceForDate } from '../../../utils/timeDifference'
+
+import { FETCH_VIEWER } from '../../../App'
 
 const UPDATE_TODO_TEXT = gql`
   mutation UpdateTodoText($input: UpdateTodoTextInput!) {
@@ -20,8 +24,6 @@ const UPDATE_TODO_TEXT = gql`
       todo {
         __typename
         _id
-        complete
-        createdAt
         updatedAt
         text
       }
@@ -29,16 +31,14 @@ const UPDATE_TODO_TEXT = gql`
   }
 `;
 
-const todo = gql`
-fragment Todo on Todo {
-  __typename
-  _id
-  complete
-  createdAt
-  updatedAt
-  text
-}
-`
+const DELETE_TODO = gql`
+  mutation DeleteTodo($input: DeleteTodoInput!) {
+    deleteTodo(input: $input) {
+      __typename
+      _id # the deleted _id
+    }
+  }
+`;
 
 class Todo extends Component {
 
@@ -72,12 +72,17 @@ class Todo extends Component {
                       updateTodoText={input => {
                         client.writeFragment({ // we render todos on Todos component from client readQuery
                           id: _id,
-                          fragment: todo,
+                          fragment: gql`
+                            fragment TodoFragment on Todo {
+                              __typename
+                              _id
+                              updatedAt
+                              text
+                            }
+                          `,
                           data: {
                             __typename: 'Todo',
                             _id,
-                            complete,
-                            createdAt,
                             text: input.text,
                             updatedAt: new Date().toISOString(),
                           },
@@ -93,14 +98,11 @@ class Todo extends Component {
                                 _id,
                                 text: input.text,
                                 updatedAt: new Date().toISOString(),
-                                complete,
-                                createdAt,
                               }
                             }
                           }
                         })
-                      }
-                      }
+                      }}
                     />
                   )}
                 </Mutation>
@@ -116,6 +118,35 @@ class Todo extends Component {
                     {text}
                   </div>
                 )}
+              <Mutation
+                mutation={DELETE_TODO}>
+                {mutate => (
+                  <Icon
+                    onClick={() => {
+                      const { viewer } = client.readQuery({ query: FETCH_VIEWER })
+                      client.writeQuery({
+                        query: FETCH_VIEWER,
+                        data: {
+                          __typename: 'Query',
+                          viewer: {
+                            __typename: 'User',
+                            ...viewer,
+                            todos: viewer.todos.filter(t => t._id !== _id)
+                          }
+                        }
+                      })
+                      return mutate({
+                        variables: { input: { _id } },
+                      })
+                    }}
+                    style={{
+                      color: 'red',
+                      cursor: 'pointer'
+                    }}
+                    icon={remove}
+                  />
+                )}
+              </Mutation>
             </CardTitle>
             <CardText
               className="mt-2 text-center"
@@ -144,7 +175,16 @@ Todo.propTypes = {
 }
 
 Todo.fragments = {
-  todo
+  todo: gql`
+    fragment Todo on Todo {
+      __typename
+      _id
+      complete
+      createdAt
+      updatedAt
+      text
+    }
+  `
 }
 
 export default Todo
