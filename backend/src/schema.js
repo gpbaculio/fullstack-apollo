@@ -28,10 +28,14 @@ const typeDefs = gql`
     addTodo(text: String!): AddTodoResponse!
     updateTodoText(input: UpdateTodoTextInput!): UpdateTodoTextResponse!
     deleteTodo(input: DeleteTodoInput!): DeleteTodoResponse!
-    toggleCompleteTodo: (input: ToggleCompleteInput!): ToggleCompleteResponse!
+    toggleComplete(input: ToggleCompleteInput!): ToggleCompleteResponse!
+  }
+  input ToggleCompleteInput {
+    _ids: [ID]!
+    complete: Boolean!
   }
   type ToggleCompleteResponse {
-    toggledTodos: [Todo]!
+    toggledIds: [ID]!
   }
   input DeleteTodoInput {
     _id: ID!

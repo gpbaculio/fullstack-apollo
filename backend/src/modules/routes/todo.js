@@ -17,27 +17,30 @@ router.post('/', async (req, res) => {
 
 router.post('/toggleComplete', async (req, res) => {
   const { input: { _ids, complete }, user: { id: userId } } = req.body;
-  try {
-    await Todo.updateMany(
-      { _id: { $in: _ids }, userId },
-      { $set: { complete } },
-      async () => {
-        const todos = await Todo.find(
-          { _id: { $in: _ids }, userId }
-        ).populate('userId', '_id');
-        res.json({ todos })
+  await Todo.updateMany(
+    { _id: { $in: _ids }, userId },
+    { $set: { complete } },
+    async (error) => {
+      if (error) {
+        res.status(400).json({ error })
       }
-    );
-  } catch (error) {
-    res.status(400).json({ error })
-  }
+      await Todo.find(
+        { _id: { $in: _ids }, userId },
+        '_id',
+        (err, result) => {
+          if (err) {
+            res.status(400).json({ error: err })
+          }
+          res.json({ _ids: result })
+        }
+      )
+    }
+  );
 })
 
 router.post('/deleteTodo', async (req, res) => {
   const { input: { _id }, user: { id: userId } } = req.body;
   await Todo.findOneAndRemove({ _id, userId }, (error, todo) => {
-    console.log('todo = ', todo)
-    console.log('todo = ', todo._id)
     if (error) {
       res.status(400).json({ error })
     } else {

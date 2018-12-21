@@ -70,17 +70,40 @@ class Todo extends Component {
         <Card className="mx-auto mt-4 w-75 p-3">
           <CardBody>
             <CardTitle className="d-flex align-items-center justify-content-between">
-              <Input
-                onClick={() => {
-                  /** WORK ON MUTATE TOMORROW!! */
-                }}
-                checked={complete}
-                type="checkbox"
-              />
+              <Mutation mutation={TOGGLE_COMPLETE}>
+                {mutate => (
+                  <Input
+                    onClick={() => {
+                      client.writeFragment({ // we render todos on Todos component from client readQuery
+                        id: _id,
+                        fragment: gql`
+                          fragment ToggleCompleteFragment on Todo {
+                            __typename
+                            _id
+                            complete
+                          }
+                        `,
+                        data: {
+                          __typename: 'Todo',
+                          complete: !complete,
+                        },
+                      });
+                      return mutate({
+                        variables: {
+                          input: {
+                            _ids: [_id], // pass as an array because we can use this mutation for multiple todos
+                            complete: !complete // the opposite value of boolean will be set to the selected todo
+                          }
+                        },
+                      })
+                    }}
+                    checked={complete}
+                    type="checkbox"
+                  />
+                )}
+              </Mutation>
               {isEditing ? (
-                <Mutation
-                  mutation={UPDATE_TODO_TEXT}
-                >
+                <Mutation mutation={UPDATE_TODO_TEXT}>
                   {mutate => (
                     <UpdateTodoText
                       _id={_id}
@@ -90,7 +113,7 @@ class Todo extends Component {
                         client.writeFragment({ // we render todos on Todos component from client readQuery
                           id: _id,
                           fragment: gql`
-                            fragment TodoFragment on Todo {
+                            fragment UpdateTextFragment on Todo {
                               __typename
                               _id
                               updatedAt

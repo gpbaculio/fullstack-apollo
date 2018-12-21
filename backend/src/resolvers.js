@@ -57,10 +57,10 @@ export default {
       const { _id } = await api.deleteTodo({ input, user })
       return ({ _id })
     },
-    completeTodo: async (_root, { input }, { dataSources: { api }, user }) => {
-      const { todos } = await api.completeTodo({ input, user })
+    toggleComplete: async (_root, { input }, { dataSources: { api }, user }) => {
+      const { _ids } = await api.toggleComplete({ input, user })
       return ({
-        toggledTodos: todos
+        toggledIds: _ids
       })
     }
   },
