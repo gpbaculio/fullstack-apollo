@@ -32,14 +32,7 @@
         ]
       }
     ],
-    "no-underscore-dangle": [
-      1,
-      {
-        "allow": [
-          "_id"
-        ]
-      }
-    ],
+    "no-underscore-dangle": "off",
     "react/no-did-update-set-state": "off",
     "no-param-reassign": "off",
     "react/jsx-child-element-spacing": "off",

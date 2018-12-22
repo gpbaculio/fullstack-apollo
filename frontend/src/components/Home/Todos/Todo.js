@@ -42,7 +42,7 @@ const DELETE_TODO = gql`
   }
 `;
 
-const TOGGLE_COMPLETE = gql`
+export const TOGGLE_COMPLETE = gql`
   mutation ToggleComplete($input: ToggleCompleteInput!) {
     toggleComplete(input: $input) {
       __typename
