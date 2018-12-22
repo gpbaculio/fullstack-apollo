@@ -49,15 +49,25 @@ router.post('/deleteTodo', async (req, res) => {
   });
 })
 
-router.post('/delete_completed', async (req, res) => {
-  const { ids, userId } = req.body;
-  await Todo.deleteMany({ userId, _id: { $in: ids } }, error => {
-    if (error) {
-      res.status(400).json({ error })
-    } else {
-      res.json('OK')
-    }
-  });
+router.post('/clearCompleted', async (req, res) => {
+  const { input: { _ids }, user: { id: userId } } = req.body;
+  await Todo.find(
+    { userId, _id: { $in: _ids } },
+    '_id',
+    async (error, result) => {
+      if (error) {
+        res.status(400).json({ error })
+      }
+      await Todo.deleteMany(
+        { userId, _id: { $in: _ids } },
+        (deleteError) => {
+          if (deleteError) {
+            res.status(400).json({ error: deleteError })
+          } else {
+            res.json({ _ids: result.map(({ _id }) => _id) })
+          }
+        });
+    })
 })
 
 router.post('/updateText', async (req, res) => {

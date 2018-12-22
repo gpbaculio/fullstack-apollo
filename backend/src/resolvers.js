@@ -62,6 +62,13 @@ export default {
       return ({
         toggledIds: _ids
       })
+    },
+    clearCompleted: async (_root, { input }, { dataSources: { api }, user }) => {
+      console.log('input = ', input)
+      const { _ids } = await api.clearCompleted({ input, user })
+      return ({
+        clearedIds: _ids
+      })
     }
   },
 };

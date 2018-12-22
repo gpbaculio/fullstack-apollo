@@ -59,6 +59,13 @@ class Api extends RESTDataSource {
     })
   }
 
+  async clearCompleted({ input, user }) {
+    const { _ids } = await this.post('/todo/clearCompleted', { input, user })
+    return ({
+      _ids
+    })
+  }
+
 }
 
 export default Api

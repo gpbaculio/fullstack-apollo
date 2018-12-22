@@ -29,6 +29,13 @@ const typeDefs = gql`
     updateTodoText(input: UpdateTodoTextInput!): UpdateTodoTextResponse!
     deleteTodo(input: DeleteTodoInput!): DeleteTodoResponse!
     toggleComplete(input: ToggleCompleteInput!): ToggleCompleteResponse!
+    clearCompleted(input: ClearCompletedInput!): ClearCompletedResponse!
+  }
+  input ClearCompletedInput {
+    _ids: [ID]!
+  }
+  type ClearCompletedResponse {
+    clearedIds: [ID]!
   }
   input ToggleCompleteInput {
     _ids: [ID]!
