@@ -49,7 +49,8 @@ const client = new ApolloClient({
       todosCount: 0
     }),
     todosRefetching: () => false,
-    page: () => 1
+    page: () => 1,
+    sort: () => 'all'
   },
 });
 

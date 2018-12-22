@@ -25,10 +25,17 @@ export const CLEAR_COMPLETED = gql`
   }
 `;
 
+export const SORT = gql`
+  query SORT {
+    sort @client 
+  }
+`;
+
 const Filter = () => (
   <ApolloConsumer>
     {client => {
       const { viewer } = client.readQuery({ query: FETCH_VIEWER })
+      const { sort } = client.readQuery({ query: SORT })
       const getIdsByComplete = bool => map(
         filter(
           viewer.todos,
@@ -105,6 +112,7 @@ const Filter = () => (
                   size="md"
                   color="link"
                   name="all"
+                  disabled={sort === 'all'}
                 >
                   All
               </Button>
@@ -112,6 +120,7 @@ const Filter = () => (
                   size="md"
                   color="link"
                   name="active" // complete = false
+                  disabled={sort === 'active'}
                 >
                   Active
               </Button>
@@ -119,6 +128,7 @@ const Filter = () => (
                   size="md"
                   color="link"
                   name="complete"
+                  disabled={sort === 'complete'}
                 >
                   Completed
               </Button>

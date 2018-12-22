@@ -8,6 +8,7 @@ export const typeDefs = gql`
     pagination: Pagination!
     todosRefetching: Boolean!
     page: Int!
+    sort: String!
   }
   extend type SignUpState {
     success: Boolean!
