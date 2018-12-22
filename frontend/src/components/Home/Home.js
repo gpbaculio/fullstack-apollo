@@ -11,6 +11,7 @@ import uuidv1 from 'uuid/v1';
 
 import { AddTodo, Search } from '../Forms'
 import Todos from './Todos';
+import Filter from '../Filter'
 
 import { FETCH_VIEWER } from '../../App'
 
@@ -116,7 +117,7 @@ function Home() {
                     ) : (
                         <Alert className="text-center mx-auto mt-4 mb-xs-1 mb-md-5" color="primary">
                           Please confirm your account to Add Todo
-                    </Alert>
+                        </Alert>
                       )}
                   </Col>
                   <Col xs="12" md="6">
@@ -126,6 +127,7 @@ function Home() {
               )}
             </Query>
           </Container>
+          <Filter />
           <Todos />
         </React.Fragment>
       )}

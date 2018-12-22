@@ -19,11 +19,6 @@ const IS_LOGGED_IN = gql`
   }
 `;
 
-export const PAGE = gql`
-query page {
-  page @client 
-}
-`
 export const FETCH_VIEWER = gql`
   query FetchViewer($page: Int) {
     __typename
