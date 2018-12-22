@@ -32,6 +32,7 @@ class Todos extends React.Component {
         {client => {
           const { viewer: { todos, todosCount } } = client.readQuery({ query: FETCH_VIEWER })
           const { todosRefetching } = client.readQuery({ query: REFETCHING })
+          console.log('todosRefetching = ', todosRefetching)
           return (
             <Container>
               <Row style={{ minHeight: '60vh' }}>
@@ -55,7 +56,8 @@ class Todos extends React.Component {
                     client.writeData({ data: { todosRefetching: true } })
                     await client.query({
                       query: FETCH_VIEWER,
-                      variables: { page: currentPage }
+                      variables: { page: currentPage },
+                      fetchPolicy: 'network-only'
                     });
                   }}
                 />

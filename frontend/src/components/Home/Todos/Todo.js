@@ -82,12 +82,14 @@ class Todo extends Component {
                             __typename
                             _id
                             complete
+                            updatedAt
                           }
                         `,
                         data: {
                           __typename: 'Todo',
                           _id,
                           complete: !complete,
+                          updatedAt: new Date().toISOString(),
                         },
                       });
                       return mutate({
