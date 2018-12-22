@@ -6,6 +6,7 @@ class AddTodo extends Component {
 
   state = {
     text: '',
+    loading: false
   }
 
   onChange = e => {
@@ -17,17 +18,17 @@ class AddTodo extends Component {
 
   onSubmit = async (e) => {
     e.preventDefault()
-    const { addTodo } = this.props
+    this.setState({ loading: true })
+    const { submit } = this.props
     const { text } = this.state
     if(text){
-      await addTodo({ variables: { text:text.trim() } })
-      this.setState({ text: '' });
+      await submit({ text:text.trim() })
+      this.setState({ text: '', loading: false });
     }
   };
 
   render() {
-    const { text } = this.state
-    const { loading } = this.props
+    const { text, loading } = this.state
     return (
       <Form
         className="
@@ -53,7 +54,7 @@ class AddTodo extends Component {
 }
 
 AddTodo.propTypes = {
-  loading: PropTypes.bool.isRequired,
+  submit: PropTypes.func.isRequired,
 }
 
 export default AddTodo

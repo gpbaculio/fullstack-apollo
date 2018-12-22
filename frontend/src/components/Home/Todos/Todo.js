@@ -20,6 +20,7 @@ import { FETCH_VIEWER } from '../../../App'
 
 const UPDATE_TODO_TEXT = gql`
   mutation UpdateTodoText($input: UpdateTodoTextInput!) {
+    __typename
     updateTodoText(input: $input) {
       __typename
       todo {
@@ -130,7 +131,7 @@ class Todo extends Component {
                         });
                         return mutate({
                           variables: { input: { ...input } },
-                          optimisticResponse: { /* THIS WILL NOT WORK BECAUSE WE RENDER TODOS ON CLIENT! */
+                          optimisticResponse: { /* THIS WILL NOT WORK BECAUSE WE RENDER TODOS ON CLIENT, CLIENT GETS UPDATED AFTER THE MUTATION RESPONSE! */
                             __typename: "Mutation",
                             updateTodoText: {
                               __typename: "UpdateTodoTextResponse",

@@ -28,6 +28,7 @@
     "react-scripts": "2.1.1",
     "react-spinners": "^0.4.7",
     "reactstrap": "^6.5.0",
+    "uuid": "^3.3.2",
     "validator": "^10.9.0"
   },
   "scripts": {
