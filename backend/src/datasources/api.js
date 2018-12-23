@@ -30,8 +30,8 @@ class Api extends RESTDataSource {
     })
   }
 
-  async fetchTodos({ user: { id }, query: { offset, limit } }) {
-    const { todos, count } = await this.get('/todo/fetchTodos', { id, offset, limit })
+  async fetchTodos({ user: { id }, query: { offset, limit, complete } }) {
+    const { todos, count } = await this.get('/todo/fetchTodos', { id, offset, limit, complete })
     return ({
       count,
       todos

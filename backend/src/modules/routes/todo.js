@@ -19,7 +19,7 @@ router.post('/toggleComplete', async (req, res) => {
   const { input: { _ids, complete }, user: { id: userId } } = req.body;
   await Todo.updateMany(
     { _id: { $in: _ids }, userId },
-    { $set: { complete } },
+    { $set: { complete, updatedAt: Date.now() } },
     async (error) => {
       if (error) {
         res.status(400).json({ error })
@@ -87,14 +87,14 @@ router.post('/updateText', async (req, res) => {
 })
 
 router.get("/fetchTodos", async (req, res) => {
-  const { id, offset, limit } = req.query
+  const { id, offset, limit, complete } = req.query
   const query = { userId: id };
   // if (search) {
   //   query.text = { '$regex': `${search}`, '$options': 'i' }
   // }
-  // if (complete) {
-  //   query.complete = complete
-  // }
+  if (complete !== 'undefined') {
+    query.complete = complete
+  }
   Todo.paginate(
     query,
     {

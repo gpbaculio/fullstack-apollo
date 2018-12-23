@@ -13,16 +13,10 @@ import {
 
 import Todo from './components/Home/Todos/Todo'
 
-const IS_LOGGED_IN = gql`
-  query IsLoggedIn {
-    isLoggedIn @client 
-  }
-`;
-
 export const FETCH_VIEWER = gql`
-  query FetchViewer($page: Int) {
+  query FetchViewer($page: Int, $sort: String) {
     __typename
-    viewer(page: $page) {
+    viewer(page: $page, sort:$sort) {
       __typename
       id
       email
@@ -39,47 +33,28 @@ export const FETCH_VIEWER = gql`
 
 function App() {
   return (
-    <ApolloConsumer>
-      {client => (
-        <Query query={FETCH_VIEWER} notifyOnNetworkStatusChange>
-          {({ data: { viewer }, loading }) => {
-            client.writeData({ data: { todosRefetching: loading } })
-            if (viewer) {
-              client.writeData({
-                data: {
-                  isLoggedIn: true,
-                  currentUser: {
-                    __typename: 'CurrentUser',
-                    id: viewer.id,
-                    email: viewer.email,
-                    confirmed: viewer.confirmed,
-                  }
-                }
-              })
-            }
-            const { isLoggedIn } = client.readQuery({ query: IS_LOGGED_IN })
-            if (!isLoggedIn && loading) {
-              return <Loading loading={loading} />
-            }
-            return (
-              <Fragment>
-                <Header />
-                {isLoggedIn ? (
-                  <Router primary={false} component={Fragment}>
-                    <Home path="/" />
-                  </Router>
-                ) : (
-                    <Router primary={false} component={Fragment}>
-                      <Welcome path="/" />
-                      <Confirmation path="/confirmation/:token" />
-                    </Router>
-                  )}
-              </Fragment>
-            )
-          }}
-        </Query>
-      )}
-    </ApolloConsumer>
+    <Query query={FETCH_VIEWER}>
+      {({ data: { viewer }, loading }) => {
+        if (loading) {
+          return <Loading loading={loading} />
+        }
+        return (
+          <Fragment>
+            <Header />
+            {viewer.id ? (
+              <Router primary={false} component={Fragment}>
+                <Home path="/" />
+              </Router>
+            ) : (
+                <Router primary={false} component={Fragment}>
+                  <Welcome path="/" />
+                  <Confirmation path="/confirmation/:token" />
+                </Router>
+              )}
+          </Fragment>
+        )
+      }}
+    </Query>
   )
 }
 

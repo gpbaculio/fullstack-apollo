@@ -1,22 +1,19 @@
 
 export default {
   Query: {
-    viewer: async (_root, { page = 1, sort, limit, search }, { user, dataSources: { api } }) => {
+    viewer: async (_root, { page = 1, sort, search }, { user, dataSources: { api } }) => {
       if (!user) return null
       const query = {
+        search,
         limit: 9,
-        offset: (page - 1) * 9,
-        search
+        offset: (page - 1) * 9
       }
-      if (limit) {
-        query.limit = limit
-      }
-      if (sort === 'all') {
-        query.complete = null
+      if (sort === 'complete') {
+        query.complete = true
       } else if (sort === 'active') {
         query.complete = false
       } else {
-        query.complete = true
+        query.complete = undefined
       }
       // const five = Buffer.from((5).toString()).toString('base64')
       // console.log(five)

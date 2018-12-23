@@ -1,5 +1,5 @@
 import React from 'react'
-import { ApolloConsumer, Mutation } from 'react-apollo'
+import { ApolloConsumer, Mutation, Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import map from 'lodash/map'
 import every from 'lodash/every'
@@ -35,7 +35,6 @@ const Filter = () => (
   <ApolloConsumer>
     {client => {
       const { viewer } = client.readQuery({ query: FETCH_VIEWER })
-      const { sort } = client.readQuery({ query: SORT })
       const getIdsByComplete = bool => map(
         filter(
           viewer.todos,
@@ -107,32 +106,50 @@ const Filter = () => (
                 </Mutation>
                 {allCompleted ? 'Deselect All' : 'Select All'}
               </div>
-              <div className="nav-container d-flex justify-content-around">
-                <Button
-                  size="md"
-                  color="link"
-                  name="all"
-                  disabled={sort === 'all'}
-                >
-                  All
-              </Button>
-                <Button
-                  size="md"
-                  color="link"
-                  name="active" // complete = false
-                  disabled={sort === 'active'}
-                >
-                  Active
-              </Button>
-                <Button
-                  size="md"
-                  color="link"
-                  name="complete"
-                  disabled={sort === 'complete'}
-                >
-                  Completed
-              </Button>
-              </div>
+              <Query query={SORT}>
+                {({ data: { sort }, }) => <Query query={FETCH_VIEWER}>
+                  {({ refetch }) => (
+                    <div className="nav-container d-flex justify-content-around">
+                      <Button
+                        size="md"
+                        color="link"
+                        name="all"
+                        onClick={() => {
+                          client.writeData({ data: { sort: 'all' } })
+                          refetch({ page: 1, sort: 'all' })
+                        }}
+                        disabled={sort === 'all'}
+                      >
+                        All
+                        </Button>
+                      <Button
+                        size="md"
+                        color="link"
+                        name="active" // complete = false
+                        onClick={() => {
+                          client.writeData({ data: { sort: 'active' } })
+                          refetch({ page: 1, sort: 'active' })
+                        }}
+                        disabled={sort === 'active'}
+                      >
+                        Active
+                        </Button>
+                      <Button
+                        size="md"
+                        color="link"
+                        name="complete"
+                        onClick={() => {
+                          client.writeData({ data: { sort: 'complete' } })
+                          refetch({ page: 1, sort: 'complete' })
+                        }}
+                        disabled={sort === 'complete'}
+                      >
+                        Completed
+                        </Button>
+                    </div>
+                  )}
+                </Query>}
+              </Query>
             </Col>
             <Col lg="2" className="d-flex align-items-center justify-content-center">
               <Mutation mutation={CLEAR_COMPLETED}>
