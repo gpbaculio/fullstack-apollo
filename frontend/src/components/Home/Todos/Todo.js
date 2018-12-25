@@ -67,144 +67,129 @@ class Todo extends Component {
     const { isEditing } = this.state
     const { todo: { _id, complete, createdAt, updatedAt, text } } = this.props
     return (
-      <ApolloConsumer>{client => <Col lg="4" md="6" sm="12">
-        <Card className="mx-auto mt-4 w-75 p-3">
-          <CardBody>
-            <CardTitle className="d-flex align-items-center justify-content-between">
-              <Mutation mutation={TOGGLE_COMPLETE}>
-                {mutate => (
-                  <Input
-                    onChange={() => {
-                      client.writeFragment({ // we render todos on Todos component from client readQuery
-                        id: _id,
-                        fragment: gql`
-                          fragment ToggleCompleteFragment on Todo {
-                            __typename
-                            _id
-                            complete
-                            updatedAt
-                          }
-                        `,
-                        data: {
-                          __typename: 'Todo',
-                          _id,
-                          complete: !complete,
-                          updatedAt: new Date().toISOString(),
-                        },
-                      });
-                      return mutate({
-                        variables: {
-                          input: {
-                            _ids: [_id], // pass as an array because we can use this mutation for multiple todos
-                            complete: !complete // the opposite value of boolean will be set to the selected todo
-                          }
-                        },
-                      })
-                    }}
-                    checked={complete}
-                    type="checkbox"
-                  />
-                )}
-              </Mutation>
-              {isEditing ? (
-                <Mutation mutation={UPDATE_TODO_TEXT}>
+      <ApolloConsumer>{client => (
+        <Col lg="4" md="6" sm="12">
+          <Card className="mx-auto mt-4 w-75 p-3">
+            <CardBody>
+              <CardTitle className="d-flex align-items-center justify-content-between">
+                <Mutation mutation={TOGGLE_COMPLETE}>
                   {mutate => (
-                    <UpdateTodoText
-                      _id={_id}
-                      text={text}
-                      handleIsEditing={this.handleIsEditing}
-                      updateTodoText={input => {
+                    <Input
+                      onChange={() => {
                         client.writeFragment({ // we render todos on Todos component from client readQuery
                           id: _id,
                           fragment: gql`
-                            fragment UpdateTextFragment on Todo {
+                            fragment ToggleCompleteFragment on Todo {
                               __typename
                               _id
+                              complete
                               updatedAt
-                              text
                             }
                           `,
                           data: {
                             __typename: 'Todo',
                             _id,
-                            text: input.text,
+                            complete: !complete,
                             updatedAt: new Date().toISOString(),
                           },
                         });
                         return mutate({
-                          variables: { input: { ...input } },
-                          optimisticResponse: { /* THIS WILL NOT WORK BECAUSE WE RENDER TODOS ON CLIENT, CLIENT GETS UPDATED AFTER THE MUTATION RESPONSE! */
-                            __typename: "Mutation",
-                            updateTodoText: {
-                              __typename: "UpdateTodoTextResponse",
-                              todo: {
-                                __typename: "Todo",
-                                _id,
-                                text: input.text,
-                                updatedAt: new Date().toISOString(),
-                              }
+                          variables: {
+                            input: {
+                              _ids: [_id], // pass as an array because we can use this mutation for multiple todos
+                              complete: !complete // the opposite value of boolean will be set to the selected todo
                             }
-                          }
+                          },
                         })
                       }}
+                      checked={complete}
+                      type="checkbox"
                     />
                   )}
                 </Mutation>
-              ) : (
-                  <div
-                    onDoubleClick={this.handleIsEditing}
-                    style={{
-                      textDecoration: complete ? 'line-through' : 'none',
-                      cursor: 'pointer'
-                    }}
-                    className="mx-auto"
-                  >
-                    {text}
-                  </div>
-                )}
-              <Mutation
-                mutation={DELETE_TODO}>
-                {mutate => (
-                  <Icon
-                    onClick={() => {
-                      const { viewer } = client.readQuery({ query: FETCH_VIEWER })
-                      client.writeQuery({
-                        query: FETCH_VIEWER,
-                        data: {
-                          __typename: 'Query',
-                          viewer: {
-                            __typename: 'User',
-                            ...viewer,
-                            todos: viewer.todos.filter(t => t._id !== _id)
-                          },
-                          todosCount: viewer.todosCount - 1
+                {isEditing ? (
+                  <Mutation mutation={UPDATE_TODO_TEXT}>
+                    {mutate => (
+                      <UpdateTodoText
+                        _id={_id}
+                        text={text}
+                        handleIsEditing={this.handleIsEditing}
+                        updateTodoText={input =>
+                          mutate({
+                            variables: { input: { ...input } },
+                            optimisticResponse: {
+                              __typename: "Mutation",
+                              updateTodoText: {
+                                __typename: "UpdateTodoTextResponse",
+                                todo: {
+                                  __typename: "Todo",
+                                  _id,
+                                  text: input.text,
+                                  updatedAt: new Date().toISOString(),
+                                }
+                              }
+                            }
+                          })
                         }
-                      })
-                      return mutate({
-                        variables: { input: { _id } },
-                      })
-                    }}
-                    style={{
-                      color: 'red',
-                      cursor: 'pointer'
-                    }}
-                    icon={remove}
-                  />
-                )}
-              </Mutation>
-            </CardTitle>
-            <CardText
-              className="mt-2 text-center"
-              style={{ borderTop: 'solid black 1px' }}
-            >
-              {createdAt === updatedAt ?
-                `Added ${timeDifferenceForDate(createdAt)}`
-                : `Updated ${timeDifferenceForDate(updatedAt)}`}
-            </CardText>
-          </CardBody>
-        </Card>
-      </Col>}</ApolloConsumer>
-
+                      />
+                    )}
+                  </Mutation>
+                ) : (
+                    <div
+                      onDoubleClick={this.handleIsEditing}
+                      style={{
+                        textDecoration: complete ? 'line-through' : 'none',
+                        cursor: 'pointer'
+                      }}
+                      className="mx-auto"
+                    >
+                      {text}
+                    </div>
+                  )}
+                <Mutation
+                  mutation={DELETE_TODO}>
+                  {mutate => (
+                    <Icon
+                      onClick={() => {
+                        const { viewer } = client.readQuery({ query: FETCH_VIEWER })
+                        client.writeQuery({
+                          query: FETCH_VIEWER,
+                          data: {
+                            __typename: 'Query',
+                            viewer: {
+                              __typename: 'User',
+                              ...viewer,
+                              todos: viewer.todos.filter(t => t._id !== _id)
+                            },
+                            todosCount: viewer.todosCount - 1
+                          }
+                        })
+                        return mutate({
+                          variables: { input: { _id } },
+                        })
+                      }}
+                      style={{
+                        color: 'red',
+                        cursor: 'pointer'
+                      }}
+                      icon={remove}
+                    />
+                  )}
+                </Mutation>
+              </CardTitle>
+              <CardText
+                className="mt-2 text-center"
+                style={{ borderTop: 'solid black 1px' }}
+              >
+                {createdAt === updatedAt ?
+                  `Added ${timeDifferenceForDate(createdAt)}`
+                  : `Updated ${timeDifferenceForDate(updatedAt)}`}
+              </CardText>
+            </CardBody>
+          </Card>
+        </Col>
+      )}
+      </ApolloConsumer>
     )
   }
 }
