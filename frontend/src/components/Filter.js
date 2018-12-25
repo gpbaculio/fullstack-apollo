@@ -33,160 +33,165 @@ export const SORT = gql`
 
 const Filter = () => (
   <ApolloConsumer>
-    {client => {
-      const { viewer } = client.readQuery({ query: FETCH_VIEWER })
-      const getIdsByComplete = bool => map(
-        filter(
-          viewer.todos,
-          ({ complete }) => complete === bool
-        ),
-        ({ _id }) => _id
-      )
-      const allCompleted = every(
-        map(
-          viewer.todos,
-          ({ complete }) => complete
-        ),
-        c => c === true
-      )
-      const completedIds = getIdsByComplete(true)
-      const inCompleteIds = getIdsByComplete(false)
-      return (
-        <Container>
-          <Row className="my-3">
-            <Col lg="2" className="d-flex justify-content-center align-items-center">
-              Total: {viewer.todosCount}
-            </Col>
-            <Col lg="8" className="filter d-flex justify-content-center align-items-center">
-              <div className="d-flex align-items-center">
-                <Mutation mutation={TOGGLE_COMPLETE}>
-                  {mutate => (
-                    <Input
-                      onChange={() => {
-                        const input = {}
-                        const updateFragment = ({ _ids, complete }) => {
-                          _ids.forEach(_id => {
-                            client.writeFragment({ // we render todos on Todos component from client readQuery
-                              id: _id,
-                              fragment: gql`
-                                  fragment ToggleCompleteFragment on Todo {
-                                    __typename
-                                    _id
-                                    complete
-                                  }
-                                `,
-                              data: {
-                                __typename: 'Todo',
-                                _id,
-                                complete,
+    {client => (
+      <Query query={FETCH_VIEWER}>
+        {({ data: { viewer, sort, page }, refetch, error }) => {
+          const getIdsByComplete = bool => map(
+            filter(
+              viewer.todos,
+              ({ complete }) => complete === bool
+            ),
+            ({ _id }) => _id
+          )
+          const allCompleted = every(
+            map(
+              viewer.todos,
+              ({ complete }) => complete
+            ),
+            c => c === true
+          )
+
+          const updateFragment = async ({ _ids, complete }) => {
+            client.writeData({ data: { todosRefetching: true } })
+            _ids.forEach(_id => {
+              client.writeFragment({ // we render todos on Todos component from client readQuery
+                id: _id,
+                fragment: gql`
+                fragment ToggleCompleteFragment on Todo {
+                  __typename
+                  _id
+                  complete
+                }
+              `,
+                data: {
+                  __typename: 'Todo',
+                  _id,
+                  complete,
+                },
+              });
+            })
+            await refetch({ page, sort })
+            client.writeData({ data: { todosRefetching: false } })
+          }
+          const completedIds = getIdsByComplete(true)
+          const inCompleteIds = getIdsByComplete(false)
+
+          if (error) return `Error!: ${error}`;
+
+          return (
+            <Container>
+              <Row className="my-3">
+                <Col lg="2" className="d-flex justify-content-center align-items-center">
+                  Total: {viewer.todosCount}
+                </Col>
+                <Col lg="8" className="filter d-flex justify-content-center align-items-center">
+                  <div className="d-flex align-items-center">
+                    <Mutation mutation={TOGGLE_COMPLETE}>
+                      {mutate => (
+                        <Input
+                          onChange={() => {
+                            const input = {}
+                            if (allCompleted) {
+                              input._ids = completedIds
+                              input.complete = false
+                              updateFragment({ _ids: completedIds, complete: false })
+                            } else {
+                              input._ids = inCompleteIds // pass as an array because we can use this mutation for multiple todos
+                              input.complete = true // the opposite value of boolean will be set to the selected todo
+                              updateFragment({ _ids: inCompleteIds, complete: true })
+                            }
+                            return mutate({
+                              variables: {
+                                input
                               },
-                            });
-                          })
-                        }
-                        if (allCompleted) {
-                          input._ids = completedIds
-                          input.complete = false
-                          updateFragment({ _ids: completedIds, complete: false })
-                        } else {
-                          input._ids = inCompleteIds // pass as an array because we can use this mutation for multiple todos
-                          input.complete = true // the opposite value of boolean will be set to the selected todo
-                          updateFragment({ _ids: inCompleteIds, complete: true })
-                        }
-                        return mutate({
-                          variables: {
-                            input
-                          },
-                        })
+                            })
+                          }}
+                          checked={allCompleted}
+                          type="checkbox"
+                          className="mt-0"
+                        />
+                      )}
+                    </Mutation>
+                    {allCompleted ? 'Deselect All' : 'Select All'}
+                  </div>
+                  <div className="nav-container d-flex justify-content-around">
+                    <Button
+                      size="md"
+                      color="link"
+                      name="all"
+                      onClick={async () => {
+                        client.writeData({ data: { todosRefetching: true } })
+                        await refetch({ page: 1, sort: 'all' })
+                        client.writeData({ data: { sort: 'all', page: 1, todosRefetching: false } })
                       }}
-                      checked={allCompleted}
-                      type="checkbox"
-                      className="mt-0"
-                    />
-                  )}
-                </Mutation>
-                {allCompleted ? 'Deselect All' : 'Select All'}
-              </div>
-              <Query query={SORT}>
-                {({ data: { sort }, }) => <Query query={FETCH_VIEWER}>
-                  {({ refetch }) => (
-                    <div className="nav-container d-flex justify-content-around">
+                      disabled={sort === 'all'}
+                    >
+                      All
+                        </Button>
+                    <Button
+                      size="md"
+                      color="link"
+                      name="active" // complete = false
+                      onClick={async () => {
+                        client.writeData({ data: { todosRefetching: true } })
+                        await refetch({ page: 1, sort: 'active' })
+                        client.writeData({ data: { sort: 'active', page: 1, todosRefetching: false } })
+                      }}
+                      disabled={sort === 'active'}
+                    >
+                      Active
+                        </Button>
+                    <Button
+                      size="md"
+                      color="link"
+                      name="complete"
+                      onClick={async () => {
+                        client.writeData({ data: { todosRefetching: true } })
+                        await refetch({ page: 1, sort: 'complete' })
+                        client.writeData({ data: { sort: 'complete', page: 1, todosRefetching: false } })
+                      }}
+                      disabled={sort === 'complete'}
+                    >
+                      Completed
+                        </Button>
+                  </div>
+                </Col>
+                <Col lg="2" className="d-flex align-items-center justify-content-center">
+                  <Mutation mutation={CLEAR_COMPLETED}>
+                    {mutate => (
                       <Button
                         size="md"
                         color="link"
-                        name="all"
+                        disabled={!completedIds.length}
                         onClick={() => {
-                          client.writeData({ data: { sort: 'all' } })
-                          refetch({ page: 1, sort: 'all' })
+                          client.writeQuery({
+                            query: FETCH_VIEWER,
+                            data: {
+                              viewer: {
+                                ...viewer,
+                                todos: viewer.todos.filter(({ _id }) => !completedIds.includes(_id)),
+                                todosCount: viewer.todosCount - completedIds.length
+                              }
+                            }
+                          })
+                          mutate({
+                            variables: {
+                              input: { _ids: completedIds }
+                            },
+                          })
                         }}
-                        disabled={sort === 'all'}
                       >
-                        All
-                        </Button>
-                      <Button
-                        size="md"
-                        color="link"
-                        name="active" // complete = false
-                        onClick={() => {
-                          client.writeData({ data: { sort: 'active' } })
-                          refetch({ page: 1, sort: 'active' })
-                        }}
-                        disabled={sort === 'active'}
-                      >
-                        Active
-                        </Button>
-                      <Button
-                        size="md"
-                        color="link"
-                        name="complete"
-                        onClick={() => {
-                          client.writeData({ data: { sort: 'complete' } })
-                          refetch({ page: 1, sort: 'complete' })
-                        }}
-                        disabled={sort === 'complete'}
-                      >
-                        Completed
-                        </Button>
-                    </div>
-                  )}
-                </Query>}
-              </Query>
-            </Col>
-            <Col lg="2" className="d-flex align-items-center justify-content-center">
-              <Mutation mutation={CLEAR_COMPLETED}>
-                {mutate => (
-                  <Button
-                    size="md"
-                    color="link"
-                    disabled={!completedIds.length}
-                    onClick={() => {
-                      client.writeQuery({
-                        query: FETCH_VIEWER,
-                        data: {
-                          viewer: {
-                            ...viewer,
-                            todos: viewer.todos.filter(({ _id }) => !completedIds.includes(_id)),
-                            todosCount: viewer.todosCount - completedIds.length
-                          }
-                        }
-                      })
-                      mutate({
-                        variables: {
-                          input: {
-                            _ids: completedIds
-                          }
-                        },
-                      })
-                    }}
-                  >
-                    Clear Completed
+                        Clear Completed
                   </Button>
-                )}
-              </Mutation>
-            </Col>
-          </Row>
-        </Container>
-      )
-    }}
+                    )}
+                  </Mutation>
+                </Col>
+              </Row>
+            </Container>
+          )
+        }}
+      </Query>
+    )}
   </ApolloConsumer>
 )
 

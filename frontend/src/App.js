@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import { Router } from '@reach/router';
-import { Query, ApolloConsumer } from 'react-apollo'
+import { Query } from 'react-apollo'
 import gql from 'graphql-tag';
 
 import {
@@ -27,6 +27,9 @@ export const FETCH_VIEWER = gql`
       }
       todosCount
     }
+    page @client
+    sort @client
+    todosRefetching @client
   }
   ${Todo.fragments.todo}
 `

@@ -9,65 +9,51 @@ import Todo from './Todo'
 
 import { FETCH_VIEWER } from '../../../App'
 
-import { SORT } from '../../Filter'
-
 export const REFETCHING = gql`
   query todosRefetching {
     todosRefetching @client 
   }
 `;
 
-class Todos extends React.Component {
-
-  state = {
-    activePage: 1
-  }
-
-  onPageChange = page => {
-    this.setState({ activePage: page })
-  }
-
-  render() {
-    const { activePage } = this.state
-    return (
-      <ApolloConsumer>
-        {client => (
-          <Query query={FETCH_VIEWER}>
-            {({ data: { viewer }, loading, refetch, error }) => {
-
-              if (error) return `Error!: ${error}`;
-              return (
-                <Container>
-                  <Row style={{ minHeight: '60vh' }}>
-                    {(loading) ? (
-                      <div className="position-relative w-100">
-                        <Loading loading={loading} />
-                      </div>
-                    ) : (
-                        viewer.todos.map(todo => (
-                          <Todo key={todo._id} todo={todo} />
-                        )))}
-                  </Row>
-                  <Row className="justify-content-center mt-2">
-                    <Pagination
-                      activePage={activePage}
-                      itemsCountPerPage={9}
-                      totalItemsCount={viewer.todosCount}
-                      pageRangeDisplayed={5}
-                      onChange={async (currentPage) => {
-                        this.onPageChange(currentPage)
-                        refetch({ page: currentPage })
-                      }}
-                    />
-                  </Row>
-                </Container>
-              )
-            }}
-          </Query>
-        )}
-      </ApolloConsumer>
-    )
-  }
+function Todos() {
+  return (
+    <ApolloConsumer>
+      {client => (
+        <Query query={FETCH_VIEWER}>
+          {({ data: { viewer, page, sort, todosRefetching }, loading, refetch, error }) => {
+            const load = (todosRefetching || loading)
+            if (error) return `Error!: ${error}`;
+            return (
+              <Container>
+                <Row style={{ minHeight: '60vh' }}>
+                  {load ? (
+                    <div className="position-relative w-100">
+                      <Loading loading={load} />
+                    </div>
+                  ) : (
+                      viewer.todos.map(todo => (
+                        <Todo key={todo._id} todo={todo} />
+                      )))}
+                </Row>
+                <Row className="justify-content-center mt-2">
+                  <Pagination
+                    activePage={page}
+                    itemsCountPerPage={9}
+                    totalItemsCount={viewer.todosCount}
+                    pageRangeDisplayed={5}
+                    onChange={async (currentPage) => {
+                      client.writeData({ data: { page: currentPage } });
+                      refetch({ page, sort })
+                    }}
+                  />
+                </Row>
+              </Container>
+            )
+          }}
+        </Query>
+      )}
+    </ApolloConsumer>
+  )
 }
 
 export default Todos
