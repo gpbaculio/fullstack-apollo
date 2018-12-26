@@ -24,7 +24,7 @@ function Todos() {
             {({ data: { viewer: { todos, todosCount }, page, sort, todosRefetching }, loading, refetch, error }) => {
               const load = (todosRefetching || loading)
               if (error) return `Error!: ${error}`;
-              if (!todosCount && sort === 'all') {
+              if (!load && !todosCount && sort === 'all') {
                 return (
                   <Row>
                     <Alert color="info">
@@ -33,7 +33,7 @@ function Todos() {
                   </Row>
                 )
               }
-              if (!todosCount) {
+              if (!load && !todosCount) {
                 return (
                   <Alert color="info">
                     <h5 className="m-0">{`No ${sort}d todos`}</h5>
@@ -60,7 +60,7 @@ function Todos() {
                       pageRangeDisplayed={5}
                       onChange={async (currentPage) => {
                         client.writeData({ data: { page: currentPage } });
-                        refetch({ page, sort })
+                        refetch({ page: currentPage, sort })
                       }}
                     />
                   </Row>

@@ -36,7 +36,7 @@ export const FETCH_VIEWER = gql`
 
 function App() {
   return (
-    <Query query={FETCH_VIEWER}>
+    <Query query={FETCH_VIEWER} >
       {({ data: { viewer }, loading }) => {
         if (loading) {
           return <Loading loading={loading} />

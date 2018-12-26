@@ -52,26 +52,25 @@ const Filter = () => (
           )
 
           const updateFragment = async ({ _ids, complete }) => {
-            client.writeData({ data: { todosRefetching: true } })
             _ids.forEach(_id => {
               client.writeFragment({ // we render todos on Todos component from client readQuery
                 id: _id,
                 fragment: gql`
-                fragment ToggleCompleteFragment on Todo {
-                  __typename
-                  _id
-                  complete
-                }
-              `,
+                    fragment ToggleCompleteFragment on Todo {
+                      __typename
+                      _id
+                      complete
+                      updatedAt
+                    }
+                  `,
                 data: {
                   __typename: 'Todo',
                   _id,
                   complete,
+                  updatedAt: new Date().toISOString(),
                 },
               });
             })
-            await refetch({ page, sort })
-            client.writeData({ data: { todosRefetching: false } })
           }
           const completedIds = getIdsByComplete(true)
           const inCompleteIds = getIdsByComplete(false)
@@ -86,10 +85,12 @@ const Filter = () => (
                 </Col>
                 <Col lg="8" className="filter d-flex justify-content-center align-items-center">
                   <div className="d-flex align-items-center">
-                    <Mutation mutation={TOGGLE_COMPLETE}>
-                      {mutate => (
+                    <Mutation
+                      mutation={TOGGLE_COMPLETE}
+                    >
+                      {(toggleComplete) => (
                         <Input
-                          onChange={() => {
+                          onChange={async () => {
                             const input = {}
                             if (allCompleted) {
                               input._ids = completedIds
@@ -100,12 +101,14 @@ const Filter = () => (
                               input.complete = true // the opposite value of boolean will be set to the selected todo
                               updateFragment({ _ids: inCompleteIds, complete: true })
                             }
-                            return mutate({
-                              variables: {
-                                input
-                              },
-                            })
+                            await toggleComplete({ variables: { input } }) // wait for the mutation so on refetch we get updated data
+                            if (sort !== 'all') {
+                              client.writeData({ data: { todosRefetching: true } })
+                              await refetch({ page: page > 1 ? page - 1 : page, sort })
+                              client.writeData({ data: { todosRefetching: false } })
+                            }
                           }}
+                          disabled={!viewer.todosCount}
                           checked={allCompleted}
                           type="checkbox"
                           className="mt-0"
@@ -182,7 +185,7 @@ const Filter = () => (
                         }}
                       >
                         Clear Completed
-                  </Button>
+                      </Button>
                     )}
                   </Mutation>
                 </Col>
