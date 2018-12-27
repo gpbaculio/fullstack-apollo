@@ -1,7 +1,7 @@
 import React from 'react'
 import { ApolloConsumer, Query } from 'react-apollo'
 import gql from 'graphql-tag'
-import { Container, Row, Alert } from 'reactstrap'
+import { Container, Row, Alert, Button } from 'reactstrap'
 import Pagination from 'react-js-pagination'
 import Loading from '../../Loading'
 
@@ -21,7 +21,21 @@ function Todos() {
       {client => (
         <Container>
           <Query query={FETCH_VIEWER}>
-            {({ data: { viewer: { todos, todosCount }, page, sort, todosRefetching }, loading, refetch, error }) => {
+            {({
+              data: {
+                viewer: {
+                  todos,
+                  todosCount
+                },
+                page,
+                sort,
+                todosRefetching,
+                showRefresh
+              },
+              loading,
+              refetch,
+              error
+            }) => {
               const load = (todosRefetching || loading)
               if (error) return `Error!: ${error}`;
               if (!load && !todosCount && sort === 'all') {
@@ -40,6 +54,7 @@ function Todos() {
                   </Alert>
                 )
               }
+
               return (
                 <React.Fragment>
                   <Row style={{ minHeight: '60vh' }}>
@@ -47,12 +62,21 @@ function Todos() {
                       <div className="position-relative w-100">
                         <Loading loading={load} />
                       </div>
-                    ) : (
-                        todos.map(todo => (
-                          <Todo key={todo._id} todo={todo} />
-                        )))}
+                    ) : todos.map(todo => <Todo key={todo._id} todo={todo} />)}
                   </Row>
-                  <Row className="justify-content-center mt-2">
+                  <Row className="mt-2 d-flex flex-column justify-content-center align-items-center">
+                    {showRefresh && (
+                      <Button
+                        color="primary"
+                        className="btn-block w-25"
+                        onClick={async () => {
+                          await refetch({ page, sort })
+                          client.writeData({ data: { showRefresh: false } })
+                        }}
+                      >
+                        Refresh Page
+                      </Button>
+                    )}
                     <Pagination
                       activePage={page}
                       itemsCountPerPage={9}

@@ -9,6 +9,7 @@ export const typeDefs = gql`
     todosRefetching: Boolean!
     page: Int!
     sort: String!
+    showRefresh: Boolean!
   }
   extend type SignUpState {
     success: Boolean!

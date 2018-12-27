@@ -88,7 +88,7 @@ const Filter = () => (
                     <Mutation
                       mutation={TOGGLE_COMPLETE}
                     >
-                      {(toggleComplete) => (
+                      {toggleComplete => (
                         <Input
                           onChange={async () => {
                             const input = {}
@@ -130,7 +130,7 @@ const Filter = () => (
                       disabled={sort === 'all'}
                     >
                       All
-                        </Button>
+                    </Button>
                     <Button
                       size="md"
                       color="link"
@@ -143,7 +143,7 @@ const Filter = () => (
                       disabled={sort === 'active'}
                     >
                       Active
-                        </Button>
+                    </Button>
                     <Button
                       size="md"
                       color="link"
@@ -156,17 +156,17 @@ const Filter = () => (
                       disabled={sort === 'complete'}
                     >
                       Completed
-                        </Button>
+                    </Button>
                   </div>
                 </Col>
                 <Col lg="2" className="d-flex align-items-center justify-content-center">
                   <Mutation mutation={CLEAR_COMPLETED}>
-                    {mutate => (
+                    {clearCompleted => (
                       <Button
                         size="md"
                         color="link"
                         disabled={!completedIds.length}
-                        onClick={() => {
+                        onClick={async () => {
                           client.writeQuery({
                             query: FETCH_VIEWER,
                             data: {
@@ -177,11 +177,7 @@ const Filter = () => (
                               }
                             }
                           })
-                          mutate({
-                            variables: {
-                              input: { _ids: completedIds }
-                            },
-                          })
+                          await clearCompleted({ variables: { input: { _ids: completedIds } } }) // wait for the mutation so on refetch we get updated data
                         }}
                       >
                         Clear Completed

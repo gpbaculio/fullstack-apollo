@@ -30,6 +30,7 @@ export const FETCH_VIEWER = gql`
     page @client
     sort @client
     todosRefetching @client
+    showRefresh @client
   }
   ${Todo.fragments.todo}
 `
