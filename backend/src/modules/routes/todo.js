@@ -40,11 +40,11 @@ router.post('/toggleComplete', async (req, res) => {
 
 router.post('/deleteTodo', async (req, res) => {
   const { input: { _id }, user: { id: userId } } = req.body;
-  await Todo.findOneAndRemove({ _id, userId }, (error, todo) => {
+  await Todo.findOneAndRemove({ _id, userId }, (error) => {
     if (error) {
       res.status(400).json({ error })
     } else {
-      res.status(200).json({ _id: todo._id })
+      res.status(200).json({ _id })
     }
   });
 })

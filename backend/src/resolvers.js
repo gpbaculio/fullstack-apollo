@@ -20,7 +20,7 @@ export default {
       // const decoded = Buffer.from(`${five}`, 'base64').toString('ascii')
       // console.log(decoded)
       const { todos, count } = await api.fetchTodos({ user, query });
-      return ({ id: user.id, email: user.email, confirmed: user.confirmed, todos, todosCount: count })
+      return ({ id: user.id, email: user.email, confirmed: user.confirmed, todos: [...todos], todosCount: count })
     },
   },
   Mutation: {

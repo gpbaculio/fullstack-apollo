@@ -50,7 +50,6 @@ const Filter = () => (
             ),
             c => c === true
           )
-
           const updateFragment = async ({ _ids, complete }) => {
             _ids.forEach(_id => {
               client.writeFragment({ // we render todos on Todos component from client readQuery
@@ -104,8 +103,9 @@ const Filter = () => (
                             await toggleComplete({ variables: { input } }) // wait for the mutation so on refetch we get updated data
                             if (sort !== 'all') {
                               client.writeData({ data: { todosRefetching: true } })
-                              await refetch({ page: page > 1 ? page - 1 : page, sort })
-                              client.writeData({ data: { todosRefetching: false } })
+                              const newPage = page > 1 ? page - 1 : page
+                              await refetch({ page: newPage, sort })
+                              client.writeData({ data: { todosRefetching: false, page: newPage } })
                             }
                           }}
                           disabled={!viewer.todosCount}
@@ -123,7 +123,7 @@ const Filter = () => (
                       color="link"
                       name="all"
                       onClick={async () => {
-                        client.writeData({ data: { todosRefetching: true } })
+                        client.writeData({ data: { todosRefetching: true, showRefresh: false } })
                         await refetch({ page: 1, sort: 'all' })
                         client.writeData({ data: { sort: 'all', page: 1, todosRefetching: false } })
                       }}
@@ -136,7 +136,7 @@ const Filter = () => (
                       color="link"
                       name="active" // complete = false
                       onClick={async () => {
-                        client.writeData({ data: { todosRefetching: true } })
+                        client.writeData({ data: { todosRefetching: true, showRefresh: false } })
                         await refetch({ page: 1, sort: 'active' })
                         client.writeData({ data: { sort: 'active', page: 1, todosRefetching: false } })
                       }}
@@ -149,7 +149,7 @@ const Filter = () => (
                       color="link"
                       name="complete"
                       onClick={async () => {
-                        client.writeData({ data: { todosRefetching: true } })
+                        client.writeData({ data: { todosRefetching: true, showRefresh: false } })
                         await refetch({ page: 1, sort: 'complete' })
                         client.writeData({ data: { sort: 'complete', page: 1, todosRefetching: false } })
                       }}
@@ -177,7 +177,8 @@ const Filter = () => (
                               }
                             }
                           })
-                          await clearCompleted({ variables: { input: { _ids: completedIds } } }) // wait for the mutation so on refetch we get updated data
+                          await clearCompleted({ variables: { input: { _ids: completedIds } } })
+                          client.writeData({ data: { showRefresh: true } })
                         }}
                       >
                         Clear Completed

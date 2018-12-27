@@ -87,13 +87,14 @@ function Home() {
                                   }
                                 },
                                 update: (proxy, { data: { addTodo: { todo } } }) => {
+                                  const data = proxy.readQuery({ query: FETCH_VIEWER })
                                   proxy.writeQuery({
                                     query: FETCH_VIEWER,
                                     data: {
                                       __typename: 'Query',
                                       viewer: {
-                                        ...viewer,
-                                        todos: viewer.todos.map(t => {
+                                        ...data.viewer,
+                                        todos: data.viewer.todos.map(t => {
                                           if (t._id === _id) {
                                             return ({ ...todo })
                                           }
