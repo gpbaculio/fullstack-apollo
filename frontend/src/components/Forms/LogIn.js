@@ -36,7 +36,6 @@ class LogIn extends Component {
       const { data: { logIn: { token, error } } } = await logIn({
         variables: { ...data },
       });
-      console.log('error = ', error)
       if (error) {
         this.setState({ formErrors: { email: error.email, password: error.password } })
       }
