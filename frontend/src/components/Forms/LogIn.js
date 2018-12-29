@@ -19,13 +19,6 @@ class LogIn extends Component {
     formErrors: {},
   };
 
-  componentDidUpdate = () => {
-    const { data } = this.props
-    if (data && data.logIn.error) {
-      this.setState({ formErrors: { server: data.logIn.error } })
-    }
-  }
-
   onChange = e => {
     const { name, value } = e.target
     this.setState(({ data }) => ({
@@ -40,10 +33,17 @@ class LogIn extends Component {
     this.setState({ formErrors })
     if (Object.keys(formErrors).length === 0) {
       const { logIn, fetchUser } = this.props
-      const { data: { logIn: { token } } } = await logIn({
+      const { data: { logIn: { token, error } } } = await logIn({
         variables: { ...data },
       });
-      await fetchUser(token)
+      if (error && Object.prototype.hasOwnProperty.call(error, 'email')) {
+        this.setState({ formErrors: { email: error.email } })
+      } else if (error && Object.prototype.hasOwnProperty.call(error, 'password')) {
+        this.setState({ formErrors: { password: error.password } })
+      }
+      if (token) {
+        await fetchUser(token)
+      }
     }
   };
 

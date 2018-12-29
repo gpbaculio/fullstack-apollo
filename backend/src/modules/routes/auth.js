@@ -7,10 +7,14 @@ router.post('/', (req, res) => {
     const { email, password } = req.body
     User.findOne({ email })
         .then(user => {
+            console.log('user = ', user)
             if (user && user.isValidPassword(password)) {
                 res.status(200).json({ token: user.toAuthJSON(), error: null })
-            } else {
-                res.status(400).json({ user: null, error: 'Invalid Credentials' })
+            } else if (user && !user.isValidPassword(password)) {
+                res.status(200).json({ token: null, error: { password: 'Incorrect Password' } })
+            }
+            if (!user) {
+                res.status(200).json({ token: null, error: { email: 'Email not registered' } })
             }
         })
 })

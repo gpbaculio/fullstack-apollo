@@ -19,7 +19,10 @@ import { CLIENT } from '../Home/Home';
 const LOGIN_USER = gql`
   mutation LogIn($email: String!, $password: String!) {
     logIn(email: $email, password: $password) {
-      error
+      error {
+        email
+        password
+      }
       token
     }
   }
