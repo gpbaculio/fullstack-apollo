@@ -12,7 +12,8 @@ import {
   Button
 } from 'reactstrap'
 
-import { VIEWER, CLIENT } from '../App';
+import { VIEWER } from '../App';
+import { CLIENT } from './Home/Home'
 import { TOGGLE_COMPLETE } from './Home/Todos/Todo'
 
 export const CLEAR_COMPLETED = gql`

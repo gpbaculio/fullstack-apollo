@@ -1,19 +1,13 @@
 import React from 'react'
 import { ApolloConsumer, Query } from 'react-apollo'
-import gql from 'graphql-tag'
 import { Container, Row, Alert, Button } from 'reactstrap'
 import Pagination from 'react-js-pagination'
 import Loading from '../../Loading'
 
 import Todo from './Todo'
 
-import { VIEWER, CLIENT } from '../../../App'
-
-export const REFETCHING = gql`
-  query todosRefetching {
-    todosRefetching @client 
-  }
-`;
+import { VIEWER } from '../../../App'
+import { CLIENT } from '../Home'
 
 function Todos() {
   return (

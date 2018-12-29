@@ -16,7 +16,8 @@ import { remove } from 'react-icons-kit/fa/remove'
 import { UpdateTodoText } from '../../Forms'
 import { timeDifferenceForDate } from '../../../utils/timeDifference'
 
-import { VIEWER, CLIENT } from '../../../App'
+import { VIEWER } from '../../../App'
+import { CLIENT } from '../Home'
 
 const UPDATE_TODO_TEXT = gql`
   mutation UpdateTodoText($input: UpdateTodoTextInput!) {

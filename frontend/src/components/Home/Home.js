@@ -13,7 +13,7 @@ import { AddTodo, Search } from '../Forms'
 import Todos from './Todos';
 import Filter from '../Filter'
 
-import { VIEWER, CLIENT } from '../../App'
+import { VIEWER } from '../../App'
 
 const ADD_TODO = gql`
   mutation AddTodo($text: String!) {
@@ -31,6 +31,18 @@ const ADD_TODO = gql`
     }
   }
 `;
+
+export const CLIENT = gql`
+  query Client {
+    __typename
+    page @client
+    sort @client
+    todosRefetching @client
+    showRefresh @client
+    isLoggedIn @client
+    viewerFetching@client
+  }
+`
 
 function Home() {
   return (

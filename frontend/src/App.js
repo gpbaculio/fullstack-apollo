@@ -31,18 +31,6 @@ export const VIEWER = gql`
   ${Todo.fragments.todo}
 `
 
-export const CLIENT = gql`
-  query Client {
-    __typename
-    page @client
-    sort @client
-    todosRefetching @client
-    showRefresh @client
-    isLoggedIn @client
-    viewerFetching@client
-  }
-`
-
 function App() {
   return (
     <Query query={VIEWER}>
