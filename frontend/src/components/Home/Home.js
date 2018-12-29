@@ -51,7 +51,7 @@ function Home() {
         <Query query={CLIENT}>
           {({ data: { sort } }) => (
             <Query query={VIEWER}>
-              {({ data: { viewer } }) => (
+              {({ data: { viewer }, refetch }) => (
                 <React.Fragment>
                   <Container>
                     <Row>
@@ -126,7 +126,11 @@ function Home() {
                           )}
                       </Col>
                       <Col xs="12" md="6">
-                        <Search />
+                        <Search
+                          search={async ({ text }) => {
+                            await refetch({ page: 1, search: text, sort })
+                          }}
+                        />
                       </Col>
                     </Row>
                   </Container>
