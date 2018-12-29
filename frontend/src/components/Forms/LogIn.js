@@ -7,7 +7,9 @@ import {
   Label,
   Input,
 } from 'reactstrap'
+import { Query, ApolloConsumer } from 'react-apollo'
 import isEmail from 'validator/lib/isEmail'
+import { CLIENT } from '../../App';
 
 class LogIn extends Component {
 
@@ -40,7 +42,9 @@ class LogIn extends Component {
     this.setState({ formErrors })
     if (Object.keys(formErrors).length === 0) {
       const { logIn } = this.props
-      logIn({ variables: { ...data } });
+      logIn({
+        variables: { ...data },
+      });
     }
   };
 
@@ -59,53 +63,63 @@ class LogIn extends Component {
     const { data, formErrors } = this.state;
     const { loading } = this.props
     return (
-      <Form
-        className="header-login-form"
-        inline
-        onSubmit={this.onSubmit}
-      >
-        {formErrors.server && (
-          <div className="alert alert-danger">{formErrors.server}</div>
+      <ApolloConsumer>
+        {client => (
+          <Query query={CLIENT}>
+            {({ data: { viewerFetching } }) => (
+              <Form
+                className="header-login-form"
+                inline
+                onSubmit={e => {
+                  client.writeData({ data: { viewerFetching: true } })
+                  this.onSubmit(e)
+                }}
+              >
+                {formErrors.server && (
+                  <div className="alert alert-danger">{formErrors.server}</div>
+                )}
+                <FormGroup className="header-email-container mr-sm-2 mb-0">
+                  <Label for="exampleEmail" className="mr-sm-2">Email</Label>
+                  <Input
+                    type="email"
+                    name="email"
+                    id="exampleEmail"
+                    placeholder="something@idk.cool"
+                    bsSize="sm"
+                    value={data.email}
+                    onChange={this.onChange}
+                    className={
+                      formErrors.email ? "form-control is-invalid" : "form-control"
+                    }
+                  />
+                </FormGroup>
+                <FormGroup className="header-password-container mr-sm-2 mb-0">
+                  <Label for="examplePassword" className="mr-sm-2">Password</Label>
+                  <Input
+                    type="password"
+                    name="password"
+                    id="examplePassword"
+                    placeholder="don't tell!"
+                    bsSize="sm"
+                    value={data.password}
+                    onChange={this.onChange}
+                    className={
+                      formErrors.password ? "form-control is-invalid" : "form-control"
+                    }
+                  />
+                </FormGroup>
+                <Button
+                  disabled={viewerFetching || loading}
+                  className="header-login-button"
+                  color="primary"
+                  size="sm"
+                >
+                  Log In
+          </Button>
+              </Form>
+            )}</Query>
         )}
-        <FormGroup className="header-email-container mr-sm-2 mb-0">
-          <Label for="exampleEmail" className="mr-sm-2">Email</Label>
-          <Input
-            type="email"
-            name="email"
-            id="exampleEmail"
-            placeholder="something@idk.cool"
-            bsSize="sm"
-            value={data.email}
-            onChange={this.onChange}
-            className={
-              formErrors.email ? "form-control is-invalid" : "form-control"
-            }
-          />
-        </FormGroup>
-        <FormGroup className="header-password-container mr-sm-2 mb-0">
-          <Label for="examplePassword" className="mr-sm-2">Password</Label>
-          <Input
-            type="password"
-            name="password"
-            id="examplePassword"
-            placeholder="don't tell!"
-            bsSize="sm"
-            value={data.password}
-            onChange={this.onChange}
-            className={
-              formErrors.password ? "form-control is-invalid" : "form-control"
-            }
-          />
-        </FormGroup>
-        <Button
-          disabled={loading}
-          className="header-login-button"
-          color="primary"
-          size="sm"
-        >
-          Log In
-        </Button>
-      </Form>
+      </ApolloConsumer>
     )
   }
 }

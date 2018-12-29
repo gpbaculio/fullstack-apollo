@@ -10,6 +10,7 @@ export const typeDefs = gql`
     page: Int!
     sort: String!
     showRefresh: Boolean!
+    viewerFetching: Boolean!
   }
   extend type SignUpState {
     success: Boolean!

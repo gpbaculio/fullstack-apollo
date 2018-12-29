@@ -51,7 +51,8 @@ const client = new ApolloClient({
     todosRefetching: () => false,
     page: () => 1,
     sort: () => 'all',
-    showRefresh: () => false
+    showRefresh: () => false,
+    viewerFetching: () => false
   },
 });
 

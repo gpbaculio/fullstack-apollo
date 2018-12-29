@@ -8,7 +8,7 @@ router.post('/', (req, res) => {
     User.findOne({ email })
         .then(user => {
             if (user && user.isValidPassword(password)) {
-                res.status(200).json({ user: user.toAuthJSON(), error: null })
+                res.status(200).json({ token: user.toAuthJSON(), error: null })
             } else {
                 res.status(400).json({ user: null, error: 'Invalid Credentials' })
             }

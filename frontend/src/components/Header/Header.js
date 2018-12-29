@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { Mutation, ApolloConsumer } from 'react-apollo'
+import { Mutation, ApolloConsumer, Query } from 'react-apollo'
 import gql from 'graphql-tag';
 import {
   Collapse,
@@ -13,18 +13,13 @@ import {
 } from 'reactstrap';
 
 import { LogInForm } from '../Forms'
-import { FETCH_VIEWER } from '../../App';
+import { VIEWER } from '../../App';
 
 const LOGIN_USER = gql`
   mutation LogIn($email: String!, $password: String!) {
     logIn(email: $email, password: $password) {
       error
-      user {
-        id
-        confirmed
-        email
-        token
-      }
+      token
     }
   }
 `;
@@ -44,21 +39,20 @@ class Header extends Component {
   render() {
     const { isOpen } = this.state
     return (
-      <Navbar
-        style={{ borderBottom: '1px solid rgba(0,0,0,.125)' }}
-        color="light"
-        light
-        expand="lg"
-      >
-        <Container className="my-2">
-          <NavbarBrand href="/">Glendon Philipp Baculio</NavbarBrand>
-          <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              <ApolloConsumer>
-                {client => {
-                  const { viewer } = client.readQuery({ query: FETCH_VIEWER })
-                  return viewer.id ? (
+      <ApolloConsumer>
+        {client => <Query query={VIEWER}>
+          {({ data: { viewer } }) => <Navbar
+            style={{ borderBottom: '1px solid rgba(0,0,0,.125)' }}
+            color="light"
+            light
+            expand="lg"
+          >
+            <Container className="my-2">
+              <NavbarBrand href="/">Glendon Philipp Baculio</NavbarBrand>
+              <NavbarToggler onClick={this.toggle} />
+              <Collapse isOpen={isOpen} navbar>
+                <Nav className="ml-auto" navbar>
+                  {viewer ? (
                     <Fragment>
                       <NavItem>
                         {viewer.email}
@@ -69,12 +63,13 @@ class Header extends Component {
                           color="primary"
                           className="ml-2"
                           onClick={() => {
-                            client.writeData({
+                            client.writeQuery({
+                              query: VIEWER,
                               data: {
-                                isLoggedIn: false,
-                                currentUser: null
+                                __typename: 'User',
+                                viewer: null
                               }
-                            });
+                            })
                             localStorage.clear();
                           }}
                         >
@@ -85,23 +80,26 @@ class Header extends Component {
                   ) : (
                       <Mutation
                         mutation={LOGIN_USER}
-                        onCompleted={({ logIn }) => {
-                          if (logIn.error === null) {
-                            localStorage.setItem('token', logIn.user.token)
+                        onCompleted={async ({ logIn: { token, error } }) => {
+                          if (error === null) {
+                            localStorage.setItem('token', token)
+                            await client.query({ // ONLY viewer data, no client field included
+                              query: VIEWER,
+                              fetchPolicy: 'network-only',
+                              context: {
+                                headers: {
+                                  "authorization": token
+                                }
+                              },
+                            })
                             client.writeData({
                               data: {
-                                logIn: {
-                                  __typename: 'LogInState',
-                                  isLoggedIn: true,
-                                  user: {
-                                    __typename: 'User',
-                                    ...logIn.user
-                                  }
-                                }
+                                viewerFetching: false
                               }
-                            });
+                            })
                           }
                         }}
+                        awaitRefetchQueries
                       >
                         {(logIn, attr = {}) => {
                           if (attr.error) return <p>An error occurred</p>;
@@ -112,13 +110,13 @@ class Header extends Component {
                           )
                         }}
                       </Mutation>
-                    )
-                }}
-              </ApolloConsumer>
-            </Nav>
-          </Collapse>
-        </Container>
-      </Navbar>
+                    )}
+                </Nav>
+              </Collapse>
+            </Container>
+          </Navbar>}
+        </Query>}
+      </ApolloConsumer>
     )
   }
 }

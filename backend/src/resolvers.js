@@ -32,10 +32,10 @@ export default {
       })
     },
     logIn: async (_root, { email, password }, { dataSources: { api } }) => {
-      const { error, user } = await api.logIn({ email, password });
+      const { error, token } = await api.logIn({ email, password });
       return ({
         error,
-        user
+        token
       })
     },
     addTodo: async (_root, { text }, { dataSources: { api }, user: { id: userId } }) => {

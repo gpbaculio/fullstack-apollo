@@ -56,13 +56,7 @@ const typeDefs = gql`
   }
   type LogInResponse {
     error: String
-    user: UserLogInResponse
-  }
-  type UserLogInResponse {
-    id: ID!
-    confirmed: Boolean!
-    token: String!
-    email: String!
+    token: String
   }
   type AddTodoResponse {
     todo: Todo

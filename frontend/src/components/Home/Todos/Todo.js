@@ -16,7 +16,7 @@ import { remove } from 'react-icons-kit/fa/remove'
 import { UpdateTodoText } from '../../Forms'
 import { timeDifferenceForDate } from '../../../utils/timeDifference'
 
-import { FETCH_VIEWER } from '../../../App'
+import { VIEWER, CLIENT } from '../../../App'
 
 const UPDATE_TODO_TEXT = gql`
   mutation UpdateTodoText($input: UpdateTodoTextInput!) {
@@ -69,10 +69,10 @@ class Todo extends Component {
     return (
       <ApolloConsumer>
         {client => {
-          const { viewer, sort } = client.readQuery({ query: FETCH_VIEWER })
+          const { viewer, sort } = client.readQuery({ query: VIEWER })
           const removeTodo = () => {
             client.writeQuery({
-              query: FETCH_VIEWER,
+              query: VIEWER,
               data: {
                 __typename: 'Query',
                 viewer: {
@@ -178,15 +178,26 @@ class Todo extends Component {
                             await mutate({
                               variables: { input: { _id } },
                             })
-                            const { viewer: deleteViewer, page: deletePage, sort: deleteSort } = deleteClient.readQuery({ query: FETCH_VIEWER })
+                            const {
+                              viewer: deleteViewer,
+                            } = deleteClient.readQuery({ query: VIEWER })
+                            const {
+                              page: deletePage,
+                              sort: deleteSort
+                            } = deleteClient.readQuery({ query: CLIENT })
                             if (!deleteViewer.todos.length && viewer.todosCount > 1) {
                               deleteClient.writeData({ data: { todosRefetching: true } })
                               await deleteClient.query({
-                                query: FETCH_VIEWER,
+                                query: VIEWER,
                                 variables: { page: deletePage, sort: deleteSort },
                                 fetchPolicy: 'network-only'
                               })
-                              deleteClient.writeData({ data: { todosRefetching: false, showRefresh: false } })
+                              deleteClient.writeData({
+                                data: {
+                                  todosRefetching: false,
+                                  showRefresh: false
+                                }
+                              })
                             }
                           }}
                           style={{

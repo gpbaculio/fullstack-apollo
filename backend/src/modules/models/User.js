@@ -49,12 +49,7 @@ UserSchema.methods.generateConfirmationUrl = function generateConfirmationUrl() 
 }
 
 UserSchema.methods.toAuthJSON = function toAuthJSON() {
-    return {
-        id: this.id,
-        email: this.email,
-        token: this.generateJWT(),
-        confirmed: this.confirmed
-    }
+    return this.generateJWT()
 }
 
 export default mongoose.model('User', UserSchema)

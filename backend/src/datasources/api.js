@@ -8,9 +8,9 @@ class Api extends RESTDataSource {
   }
 
   async logIn({ email, password }) {
-    const { user, error } = await this.post('/auth', { email, password });
+    const { token, error } = await this.post('/auth', { email, password });
     return ({
-      user,
+      token,
       error
     });
   }

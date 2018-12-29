@@ -13,8 +13,8 @@ import {
 
 import Todo from './components/Home/Todos/Todo'
 
-export const FETCH_VIEWER = gql`
-  query FetchViewer($page: Int, $sort: String) {
+export const VIEWER = gql`
+  query Viewer($page: Int, $sort: String) {
     __typename
     viewer(page: $page, sort:$sort) {
       __typename
@@ -27,17 +27,25 @@ export const FETCH_VIEWER = gql`
       }
       todosCount
     }
-    page @client
-    sort @client
-    todosRefetching @client
-    showRefresh @client
   }
   ${Todo.fragments.todo}
 `
 
+export const CLIENT = gql`
+  query Client {
+    __typename
+    page @client
+    sort @client
+    todosRefetching @client
+    showRefresh @client
+    isLoggedIn @client
+    viewerFetching@client
+  }
+`
+
 function App() {
   return (
-    <Query query={FETCH_VIEWER} >
+    <Query query={VIEWER}>
       {({ data: { viewer }, loading }) => {
         if (loading) {
           return <Loading loading={loading} />
@@ -45,7 +53,7 @@ function App() {
         return (
           <Fragment>
             <Header />
-            {viewer.id ? (
+            {viewer ? (
               <Router primary={false} component={Fragment}>
                 <Home path="/" />
               </Router>
