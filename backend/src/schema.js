@@ -54,17 +54,13 @@ const typeDefs = gql`
     error: String
     email: String
   }
-  union LogInError = EmailError | PasswordError
+  type LogInError {
+    email: String
+    password: String
+  }
   type LogInResponse {
     error: LogInError
     token: String
-  }
-  type EmailError {
-    email: String
-  }
-  
-  type PasswordError {
-    password: String
   }
   type AddTodoResponse {
     todo: Todo

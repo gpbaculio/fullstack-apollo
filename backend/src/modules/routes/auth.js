@@ -11,10 +11,10 @@ router.post('/', (req, res) => {
             if (user && user.isValidPassword(password)) {
                 res.status(200).json({ token: user.toAuthJSON(), error: null })
             } else if (user && !user.isValidPassword(password)) {
-                res.status(200).json({ token: null, error: { password: 'Incorrect Password' } })
+                res.status(200).json({ token: null, error: { email: null, password: 'Incorrect Password' } })
             }
             if (!user) {
-                res.status(200).json({ token: null, error: { email: 'Email not registered' } })
+                res.status(200).json({ token: null, error: { email: 'Email not registered', password: null } })
             }
         })
 })
