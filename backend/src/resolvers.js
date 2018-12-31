@@ -2,6 +2,7 @@
 export default {
   Query: {
     viewer: async (_root, { page = 1, sort, search }, { user, dataSources: { api } }) => {
+      console.log('search = ', search)
       if (!user) return null
       const query = {
         search,

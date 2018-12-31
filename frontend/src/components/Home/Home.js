@@ -40,7 +40,8 @@ export const CLIENT = gql`
     todosRefetching @client
     showRefresh @client
     isLoggedIn @client
-    viewerFetching@client
+    viewerFetching @client
+    search @client
   }
 `
 
@@ -122,13 +123,18 @@ function Home() {
                         ) : (
                             <Alert className="text-center mx-auto mt-4 mb-xs-1 mb-md-5" color="primary">
                               Please confirm your account to Add Todo
-                      </Alert>
+                            </Alert>
                           )}
                       </Col>
                       <Col xs="12" md="6">
                         <Search
                           search={async ({ text }) => {
-                            await refetch({ page: 1, search: text, sort })
+                            client.writeData({ data: { todosRefetching: true } })
+                            await refetch({ page: 1, search: text, sort: 'all' })
+                            client.writeData({ data: { page: 1, search: text, sort: 'all', todosRefetching: false } })
+                          }}
+                          clearText={() => {
+                            client.writeData({ data: { search: '' } })
                           }}
                         />
                       </Col>

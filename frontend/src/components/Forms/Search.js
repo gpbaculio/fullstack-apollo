@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Input, Form, Button } from 'reactstrap'
-
+import { Input, Form } from 'reactstrap'
+import PropTypes from 'prop-types'
 
 class Search extends Component {
   
@@ -9,18 +9,20 @@ class Search extends Component {
   }
 
   onChange = e => {
+    const { clearText } = this.props
     this.setState({ text: e.target.value.trim() })
+    clearText()
   }
 
   onSubmit = async (e) => {
     e.preventDefault()
     const { text } = this.state
-    console.log('text = ', text)
+    const { search }  = this.props
+    if(text) {
+      await search({ text })
+    }
   }
 
-  onClearText = () => {
-    console.log('clear!')
-  }
 
   render() {
     const { text} = this.state
@@ -43,17 +45,13 @@ class Search extends Component {
         className="form-control w-75"
         onChange={this.onChange}
       />
-      <Button
-        onClick={this.onClearText}
-        style={{color: 'red', fontSize: '18px'}}
-        className="border-0"
-        color="link"
-      >
-        clear
-      </Button>
     </Form>
     )
   }
+}
+
+Search.propTypes = {
+  clearText: PropTypes.func.isRequired,
 }
 
 export default Search

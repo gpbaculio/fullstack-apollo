@@ -14,9 +14,9 @@ import {
 import Todo from './components/Home/Todos/Todo'
 
 export const VIEWER = gql`
-  query Viewer($page: Int, $sort: String) {
+  query Viewer($page: Int, $sort: String, $search: String ) {
     __typename
-    viewer(page: $page, sort:$sort) {
+    viewer(page: $page, sort:$sort, search:$search) {
       __typename
       id
       email

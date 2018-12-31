@@ -70,7 +70,8 @@ class Todo extends Component {
     return (
       <ApolloConsumer>
         {client => {
-          const { viewer, sort } = client.readQuery({ query: VIEWER })
+          const { viewer } = client.readQuery({ query: VIEWER })
+          const { sort } = client.readQuery({ query: CLIENT })
           const removeTodo = () => {
             client.writeQuery({
               query: VIEWER,
@@ -120,6 +121,8 @@ class Todo extends Component {
                               }
                             })
                             if (sort !== 'all') {
+                              console.log('sort', sort)
+                              console.log('remove todo!')
                               removeTodo()
                             }
                           }}

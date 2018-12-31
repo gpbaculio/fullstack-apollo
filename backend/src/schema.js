@@ -2,7 +2,7 @@ import { gql } from 'apollo-server-express'
 
 const typeDefs = gql`
   type Query {
-    viewer(page: Int, sort: String): User
+    viewer(page: Int, sort: String, search: String): User
   }
   type Todo {
     _id: ID!
