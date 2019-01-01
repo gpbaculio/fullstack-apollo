@@ -13,6 +13,7 @@ const typeDefs = gql`
     complete: Boolean!
     createdAt: String!
     updatedAt: String!
+    userId: String!
   }
   type User {
     id: ID!

@@ -21,8 +21,9 @@ const context = async ({ req, connection }) => {
     return connection.context;
   }
   // simple auth check on every request
-  const { user } = await getUser(req.headers.authorization);
-  return { user };
+  const token = req.headers.authorization;
+  const { user } = await getUser(token);
+  return { user, token };
 };
 
 const engine = {
@@ -38,19 +39,13 @@ const server = new ApolloServer({
   engine,
   subscriptions: {
     onConnect: async ({ token }) => {
-      if (token) {
-        const { user } = await getUser(token);
-        console.log('subscriptions user = ', user)
-        return { user }
-      }
-
-      throw new Error('Missing auth token!');
+      console.log('token! = ', token)
+      const { user } = await getUser(token);
+      return { user }
     },
-    onDisconnect: (webSocket, con) => {
-      // ...
-      console.log('webSocket = ', webSocket)
-      console.log('con = ', con)
-    },
+    // onDisconnect: (webSocket, con) => {
+    //   console.log('disconnected!')
+    // },
   },
 });
 

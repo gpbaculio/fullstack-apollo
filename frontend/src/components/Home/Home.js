@@ -45,6 +45,20 @@ export const CLIENT = gql`
   }
 `
 
+const TODOS_SUBSCRIPTION = gql`
+  subscription todoAdded {
+    todoAdded {
+      __typename
+        _id
+        text
+        complete
+        createdAt
+        updatedAt
+    }
+  }
+`;
+
+
 function Home() {
   return (
     <ApolloConsumer>
@@ -52,98 +66,119 @@ function Home() {
         <Query query={CLIENT}>
           {({ data: { sort } }) => (
             <Query query={VIEWER}>
-              {({ data: { viewer }, refetch }) => (
-                <React.Fragment>
-                  <Container>
-                    <Row>
-                      <Col xs="12" md="6">
-                        {viewer.confirmed ? (
-                          <Mutation
-                            mutation={ADD_TODO}
-                          >
-                            {mutate => (
-                              <AddTodo
-                                submit={({ text }) => {
-                                  const now = new Date().toISOString()
-                                  const _id = uuidv1()
-                                  const mockTodo = {
-                                    __typename: "Todo",
-                                    _id,
-                                    text,
-                                    complete: false,
-                                    createdAt: now,
-                                    updatedAt: now,
-                                  }
-                                  if (sort !== 'complete') {
-                                    client.writeQuery({
-                                      query: VIEWER,
-                                      data: {
-                                        __typename: 'Query',
-                                        viewer: {
-                                          __typename: 'User',
-                                          ...viewer,
-                                          todos: [{ ...mockTodo }, ...viewer.todos],
-                                          todosCount: viewer.todosCount + 1
-                                        },
-                                      }
-                                    })
-                                  }
-                                  return mutate({
-                                    variables: { text },
-                                    optimisticResponse: {
-                                      __typename: "Mutation",
-                                      addTodo: {
-                                        __typename: "AddTodoResponse",
-                                        todo: { ...mockTodo }
-                                      }
-                                    },
-                                    update: (proxy, { data: { addTodo: { todo } } }) => {
-                                      const data = proxy.readQuery({ query: VIEWER })
-                                      proxy.writeQuery({
+              {({
+                data: { viewer },
+                refetch,
+                subscribeToMore
+              }) => (
+                  <React.Fragment>
+                    <Container>
+                      <Row>
+                        <Col xs="12" md="6">
+                          {viewer.confirmed ? (
+                            <Mutation
+                              mutation={ADD_TODO}
+                            >
+                              {mutate => (
+                                <AddTodo
+                                  submit={({ text }) => {
+                                    const now = new Date().toISOString()
+                                    const _id = uuidv1()
+                                    const mockTodo = {
+                                      __typename: "Todo",
+                                      _id,
+                                      text,
+                                      complete: false,
+                                      createdAt: now,
+                                      updatedAt: now,
+                                    }
+                                    if (sort !== 'complete') {
+                                      client.writeQuery({
                                         query: VIEWER,
                                         data: {
                                           __typename: 'Query',
                                           viewer: {
-                                            ...data.viewer,
-                                            todos: data.viewer.todos.map(t => {
-                                              if (t._id === _id) {
-                                                return ({ ...todo })
-                                              }
-                                              return t
-                                            }),
-                                          }
+                                            __typename: 'User',
+                                            ...viewer,
+                                            todos: [{ ...mockTodo }, ...viewer.todos],
+                                            todosCount: viewer.todosCount + 1
+                                          },
                                         }
-                                      });
+                                      })
                                     }
-                                  })
-                                }}
-                              />
+                                    return mutate({
+                                      variables: { text },
+                                      optimisticResponse: {
+                                        __typename: "Mutation",
+                                        addTodo: {
+                                          __typename: "AddTodoResponse",
+                                          todo: { ...mockTodo }
+                                        }
+                                      },
+                                      update: (proxy, { data: { addTodo: { todo } } }) => {
+                                        const data = proxy.readQuery({ query: VIEWER })
+                                        proxy.writeQuery({
+                                          query: VIEWER,
+                                          data: {
+                                            __typename: 'Query',
+                                            viewer: {
+                                              ...data.viewer,
+                                              todos: data.viewer.todos.map(t => {
+                                                if (t._id === _id) {
+                                                  return ({ ...todo })
+                                                }
+                                                return t
+                                              }),
+                                            }
+                                          }
+                                        });
+                                      }
+                                    })
+                                  }}
+                                />
+                              )}
+                            </Mutation>
+                          ) : (
+                              <Alert className="text-center mx-auto mt-4 mb-xs-1 mb-md-5" color="primary">
+                                Please confirm your account to Add Todo
+                              </Alert>
                             )}
-                          </Mutation>
-                        ) : (
-                            <Alert className="text-center mx-auto mt-4 mb-xs-1 mb-md-5" color="primary">
-                              Please confirm your account to Add Todo
-                            </Alert>
-                          )}
-                      </Col>
-                      <Col xs="12" md="6">
-                        <Search
-                          search={async ({ text }) => {
-                            client.writeData({ data: { todosRefetching: true } })
-                            await refetch({ page: 1, search: text, sort: 'all' })
-                            client.writeData({ data: { page: 1, search: text, sort: 'all', todosRefetching: false } })
-                          }}
-                          clearText={() => {
-                            client.writeData({ data: { search: '' } })
-                          }}
-                        />
-                      </Col>
-                    </Row>
-                  </Container>
-                  <Filter />
-                  <Todos />
-                </React.Fragment>
-              )}
+                        </Col>
+                        <Col xs="12" md="6">
+                          <Search
+                            search={async ({ text }) => {
+                              client.writeData({ data: { todosRefetching: true } })
+                              await refetch({ page: 1, search: text, sort: 'all' })
+                              client.writeData({ data: { page: 1, search: text, sort: 'all', todosRefetching: false } })
+                            }}
+                            clearText={() => {
+                              client.writeData({ data: { search: '' } })
+                            }}
+                          />
+                        </Col>
+                      </Row>
+                    </Container>
+                    <Filter />
+                    <Todos
+                      subscribeToNewTodos={() => subscribeToMore({
+                        document: TODOS_SUBSCRIPTION,
+                        updateQuery: (prev, { subscriptionData }) => {
+                          if (!subscriptionData.data) return prev;
+                          const newTodo = subscriptionData.data.todoAdded;
+                          return ({
+                            __typename: 'Query',
+                            viewer: {
+                              ...viewer,
+                              __typename: 'User',
+                              todos: [newTodo, ...viewer.todos],
+                              todosCount: viewer.todosCount + 1
+                            },
+                          });
+                        }
+                      })}
+                    />
+                  </React.Fragment>
+                )}
             </Query>
           )}
         </Query>

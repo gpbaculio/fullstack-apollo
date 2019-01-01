@@ -9,7 +9,7 @@ router.post('/', async (req, res) => {
   newTodo
     .save()
     .then(async ({ _id }) => {
-      const todo = await Todo.findOne({ _id })
+      const todo = await Todo.findOne({ _id }).populate('userId', '_id')
       res.json({ todo })
     })
     .catch(error => res.status(400).json({ error }))

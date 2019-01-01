@@ -1,11 +1,13 @@
 
+import { withFilter } from 'apollo-server'
+import pubsub from './pubSub'
+
+const TODO_ADDED = 'TODO_ADDED'
+
 export default {
   Query: {
-    viewer: async (_root, { page = 1, sort, search }, context) => {
-      // { user, dataSources: { api } }
-      console.log('context = ', context)
-      console.log('user viewer query = ', context.user)
-      if (!context.user) return null
+    viewer: async (_root, { page = 1, sort, search }, { user, dataSources: { api } }) => {
+      if (!user) return null
       const query = {
         search,
         limit: 9,
@@ -22,8 +24,21 @@ export default {
       // console.log(five)
       // const decoded = Buffer.from(`${five}`, 'base64').toString('ascii')
       // console.log(decoded)
-      const { todos, count } = await context.dataSources.api.fetchTodos({ user: context.user, query });
-      return ({ id: context.user.id, email: context.user.email, confirmed: context.user.confirmed, todos: [...todos], todosCount: count })
+      const { todos, count } = await api.fetchTodos({ user, query });
+      return ({ id: user.id, email: user.email, confirmed: user.confirmed, todos: [...todos], todosCount: count })
+    },
+  },
+  Subscription: {
+    todoAdded: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(TODO_ADDED),
+        (payload, _variables, context) => {
+          console.log('payload = ', payload)
+          console.log('context = ', context)
+          console.log('truth = ', (payload.todoAdded.userId === context.user.id))
+          return (payload.todoAdded.userId === context.user.id)
+        },
+      ),
     },
   },
   Mutation: {
@@ -43,8 +58,12 @@ export default {
     },
     addTodo: async (_root, { text }, { dataSources: { api }, user: { id: userId } }) => {
       const { todo } = await api.addTodo({ text, userId })
+      pubsub.publish(TODO_ADDED, { todoAdded: { ...todo, userId: todo.userId._id } });
       return ({
-        todo
+        todo: {
+          ...todo,
+          userId: todo.userId._id
+        }
       })
     },
     updateTodoText: async (_root, { input }, { dataSources: { api }, user: { id: userId } }) => {
