@@ -4,15 +4,19 @@ import ApolloClient from 'apollo-client';
 import { InMemoryCache, defaultDataIdFromObject } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloProvider } from 'react-apollo';
+import { split } from 'apollo-link';
+import { WebSocketLink } from 'apollo-link-ws';
+import { getMainDefinition } from 'apollo-utilities';
 
 
-import App from './App'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+import App from './App'
 
 const token = localStorage.getItem('token')
+
 const cache = new InMemoryCache({
   dataIdFromObject: object => {
     switch (object.__typename) {
@@ -21,14 +25,40 @@ const cache = new InMemoryCache({
     }
   }
 });
+
+const httpLink = new HttpLink({
+  uri: 'http://localhost:8000/graphql',
+  headers: {
+    authorization: token,
+  },
+});
+
+// Create a WebSocket link:
+const wsLink = new WebSocketLink({
+  uri: 'ws://localhost:8000/graphql',
+  options: {
+    reconnect: true,
+    connectionParams: {
+      token,
+    },
+  }
+});
+
+// using the ability to split links, you can send data to each link
+// depending on what kind of operation is being sent
+const link = split(
+  // split based on operation type
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query);
+    return kind === 'OperationDefinition' && operation === 'subscription';
+  },
+  wsLink,
+  httpLink,
+);
+
 const client = new ApolloClient({
   cache,
-  link: new HttpLink({
-    uri: 'http://localhost:8000/graphql',
-    headers: {
-      authorization: token,
-    },
-  }),
+  link,
   initializers: {
     isLoggedIn: () => false,
     signUp: () => ({

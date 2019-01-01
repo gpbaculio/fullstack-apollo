@@ -1,6 +1,9 @@
 import { gql } from 'apollo-server-express'
 
 const typeDefs = gql`
+  type Subscription {
+    todoAdded: Todo
+  }
   type Query {
     viewer(page: Int, sort: String, search: String): User
   }

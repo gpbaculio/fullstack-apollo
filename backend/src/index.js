@@ -1,12 +1,13 @@
 // require('dotenv').config();
 import { ApolloServer } from 'apollo-server-express';
+import { createServer } from 'http'
 import { getUser } from './modules/auth'
 import Api from './datasources/api'
 import app from './modules'
 import typeDefs from './schema'
 import resolvers from './resolvers'
 
-const port = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8000;
 
 // set up any dataSources our resolvers need
 const dataSources = () => ({
@@ -14,10 +15,13 @@ const dataSources = () => ({
 });
 
 // the function that sets up the global context for each resolver, using the req
-const context = async ({ req }) => {
+const context = async ({ req, connection }) => {
+  if (connection) {
+    // check connection for metadata
+    return connection.context;
+  }
   // simple auth check on every request
   const { user } = await getUser(req.headers.authorization);
-  console.log('context user = ', user)
   return { user };
 };
 
@@ -32,17 +36,34 @@ const server = new ApolloServer({
   dataSources,
   context,
   engine,
+  subscriptions: {
+    onConnect: async ({ token }) => {
+      if (token) {
+        const { user } = await getUser(token);
+        console.log('subscriptions user = ', user)
+        return { user }
+      }
+
+      throw new Error('Missing auth token!');
+    },
+    onDisconnect: (webSocket, con) => {
+      // ...
+      console.log('webSocket = ', webSocket)
+      console.log('con = ', con)
+    },
+  },
 });
 
 server.applyMiddleware({ app });
 
-// Start our server if we're not in a test env.
-// if we're in a test env, we'll manually start it in a test
-if (process.env.NODE_ENV !== 'test') {
-  app.listen({ port }, () => {
-    console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`)
-  });
-}
+const httpServer = createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
+// ⚠️ Pay attention to the fact that we are calling `listen` on the http server variable, and not on `app`.
+httpServer.listen(PORT, () => {
+  console.log(`🚀 http Server ready at http://localhost:${PORT}${server.graphqlPath}`)
+  console.log(`🚀 http Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
+})
 // export all the important pieces for integration/e2e tests to use
 module.exports = {
   dataSources,
