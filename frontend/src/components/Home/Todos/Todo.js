@@ -58,6 +58,11 @@ class Todo extends Component {
     isEditing: false,
   }
 
+  componentDidMount = () => {
+    const { subscribeToTodoUpdatedText } = this.props
+    subscribeToTodoUpdatedText()
+  }
+
   handleIsEditing = () => {
     this.setState(({ isEditing }) => ({
       isEditing: !isEditing
@@ -239,6 +244,7 @@ Todo.propTypes = {
     updatedAt: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
   }).isRequired,
+  subscribeToTodoUpdatedText: PropTypes.func.isRequired,
 }
 
 Todo.fragments = {

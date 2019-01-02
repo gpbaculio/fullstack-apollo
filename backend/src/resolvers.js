@@ -3,6 +3,7 @@ import { withFilter } from 'apollo-server'
 import pubsub from './pubSub'
 
 const TODO_ADDED = 'TODO_ADDED'
+const TODO_UPDATED_TEXT = 'TODO_UPDATED_TEXT'
 
 export default {
   Query: {
@@ -32,12 +33,13 @@ export default {
     todoAdded: {
       subscribe: withFilter(
         () => pubsub.asyncIterator(TODO_ADDED),
-        (payload, _variables, context) => {
-          console.log('payload = ', payload)
-          console.log('context = ', context)
-          console.log('truth = ', (payload.todoAdded.userId === context.user.id))
-          return (payload.todoAdded.userId === context.user.id)
-        },
+        ({ todoAdded }, _variables, { user }) => (todoAdded.userId === user.id),
+      ),
+    },
+    todoUpdatedText: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(TODO_UPDATED_TEXT),
+        ({ todoUpdatedText }, _variables, { user }) => (todoUpdatedText.userId === user.id),
       ),
     },
   },
@@ -68,8 +70,12 @@ export default {
     },
     updateTodoText: async (_root, { input }, { dataSources: { api }, user: { id: userId } }) => {
       const { todo } = await api.updateTodoText({ input, userId })
+      pubsub.publish(TODO_UPDATED_TEXT, { todoUpdatedText: { ...todo, userId: todo.userId._id } });
       return ({
-        todo
+        todo: {
+          ...todo,
+          userId: todo.userId._id
+        }
       })
     },
     deleteTodo: async (_root, { input }, { dataSources: { api }, user }) => {

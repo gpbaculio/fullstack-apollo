@@ -76,14 +76,14 @@ router.post('/updateText', async (req, res) => {
     { _id, userId },
     { $set: { text } },
     { new: true },
-    (error, result) => {
+  ).populate('userId', '_id')
+    .exec((error, result) => {
       if (error) {
         res.json({ error })
       } else {
         res.json({ todo: result })
       }
-    }
-  );
+    });
 })
 
 router.get("/fetchTodos", async (req, res) => {

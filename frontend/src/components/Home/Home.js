@@ -45,7 +45,7 @@ export const CLIENT = gql`
   }
 `
 
-const TODOS_SUBSCRIPTION = gql`
+const TODO_ADDED_SUBSCRIPTION = gql`
   subscription todoAdded {
     todoAdded {
       __typename
@@ -161,7 +161,7 @@ function Home() {
                     <Filter />
                     <Todos
                       subscribeToNewTodos={() => subscribeToMore({
-                        document: TODOS_SUBSCRIPTION,
+                        document: TODO_ADDED_SUBSCRIPTION,
                         updateQuery: (prev, { subscriptionData }) => {
                           if (!subscriptionData.data) return prev;
                           const newTodo = subscriptionData.data.todoAdded;
