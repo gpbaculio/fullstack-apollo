@@ -14,7 +14,7 @@ import * as serviceWorker from './serviceWorker';
 import App from './App';
 
 const token = localStorage.getItem('token');
-
+console.log('process.env.HOSTNAME = ', process.env.HOSTNAME);
 const cache = new InMemoryCache({
   dataIdFromObject: object => {
     switch (object.__typename) {
