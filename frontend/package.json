@@ -19,6 +19,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.11.1",
+    "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",
     "lodash": "^4.17.11",
     "normalizr": "^3.3.0",
