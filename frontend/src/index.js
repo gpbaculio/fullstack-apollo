@@ -26,7 +26,7 @@ const cache = new InMemoryCache({
 });
 
 const httpLink = new HttpLink({
-  uri: '/graphql',
+  uri: 'https://fullstack-apollo-graphql.herokuapp.com/graphql',
   headers: () => ({
     authorization: token
   })
@@ -34,7 +34,7 @@ const httpLink = new HttpLink({
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: '/graphql',
+  uri: `ws:://fullstack-apollo-graphql.herokuapp.com/subscriptions`,
   options: {
     reconnect: true,
     connectionParams: () => ({ token })
