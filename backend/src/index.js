@@ -1,6 +1,9 @@
 // require('dotenv').config();
 import { ApolloServer } from 'apollo-server-express';
 import { createServer } from 'http';
+import express from 'express';
+import path from 'path';
+import favicon from 'serve-favicon';
 import { getUser } from './modules/auth';
 import Api from './datasources/api';
 import app from './modules';
@@ -48,12 +51,21 @@ const server = new ApolloServer({
     // },
   }
 });
-
+console.log('server.use', server.use);
 server.applyMiddleware({ app });
 
 const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
+if (process.env.NODE_ENV === 'production') {
+  // Serve any static files
+  app.use(express.static(path.join(__dirname, '../../frontend/build')));
+  app.use(favicon(path.join(__dirname, '../../frontend/build', 'favicon.ico')));
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
+  });
+}
 // ⚠️ Pay attention to the fact that we are calling `listen` on the http server variable, and not on `app`.
 httpServer.listen(PORT, () => {
   console.log(

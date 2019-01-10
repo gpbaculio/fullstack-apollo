@@ -14,7 +14,6 @@ import * as serviceWorker from './serviceWorker';
 import App from './App';
 
 const token = localStorage.getItem('token');
-console.log('process.env.HOSTNAME = ', process.env.HOSTNAME);
 const cache = new InMemoryCache({
   dataIdFromObject: object => {
     switch (object.__typename) {
@@ -27,15 +26,15 @@ const cache = new InMemoryCache({
 });
 
 const httpLink = new HttpLink({
-  uri: `http://${process.env.HOSTNAME}/graphql`,
-  headers: {
+  uri: '/graphql',
+  headers: () => ({
     authorization: token
-  }
+  })
 });
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `ws://${process.env.HOSTNAME}/graphql`,
+  uri: '/graphql',
   options: {
     reconnect: true,
     connectionParams: () => ({ token })
