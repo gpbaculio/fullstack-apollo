@@ -3,7 +3,6 @@ import { ApolloServer } from 'apollo-server-express';
 import { createServer } from 'http';
 import express from 'express';
 import path from 'path';
-import fs from 'fs';
 import favicon from 'serve-favicon';
 import { getUser } from './modules/auth';
 import Api from './datasources/api';
@@ -55,13 +54,7 @@ const server = new ApolloServer({
 console.log('server.use', server.use);
 server.applyMiddleware({ app });
 
-const httpServer = createServer(
-  {
-    key: fs.readFileSync(`./ssl/production/server.key`),
-    cert: fs.readFileSync(`./ssl/production/server.crt`)
-  },
-  app
-);
+const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
 if (process.env.NODE_ENV === 'production') {
