@@ -34,7 +34,7 @@ const httpLink = new HttpLink({
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: `ws://fullstack-apollo-graphql.herokuapp.com/graphql`,
+  uri: `wss://fullstack-apollo-graphql.herokuapp.com/graphql`,
   options: {
     reconnect: true,
     connectionParams: () => ({ token })
