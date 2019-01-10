@@ -8,37 +8,37 @@ import { split } from 'apollo-link';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 
-
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import App from './App'
+import App from './App';
 
-const token = localStorage.getItem('token')
+const token = localStorage.getItem('token');
 
 const cache = new InMemoryCache({
   dataIdFromObject: object => {
     switch (object.__typename) {
-      case 'Todo': return object._id; // use `_id` as the primary key
-      default: return defaultDataIdFromObject(object); // fall back to default handling
+      case 'Todo':
+        return object._id; // use `_id` as the primary key
+      default:
+        return defaultDataIdFromObject(object); // fall back to default handling
     }
   }
 });
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:8000/graphql',
+  uri: `http://${process.env.HOSTNAME}/graphql`,
   headers: {
-    authorization: token,
-  },
+    authorization: token
+  }
 });
 
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:8000/graphql',
+  uri: `ws://${process.env.HOSTNAME}/graphql`,
   options: {
     reconnect: true,
-    connectionParams: () => ({ token }),
+    connectionParams: () => ({ token })
   }
 });
 
@@ -51,7 +51,7 @@ const link = split(
     return kind === 'OperationDefinition' && operation === 'subscription';
   },
   wsLink,
-  httpLink,
+  httpLink
 );
 
 const client = new ApolloClient({
@@ -69,7 +69,7 @@ const client = new ApolloClient({
       email: '',
       token,
       confirmed: false,
-      id: '',
+      id: ''
     }),
     pagination: () => ({
       __typename: 'Pagination',
@@ -82,7 +82,7 @@ const client = new ApolloClient({
     showRefresh: () => false,
     viewerFetching: () => false,
     search: () => ''
-  },
+  }
 });
 
 ReactDOM.render(
