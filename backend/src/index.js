@@ -10,7 +10,7 @@ import app from './modules';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 80;
 require('events').EventEmitter.defaultMaxListeners = 0;
 // set up any dataSources our resolvers need
 const dataSources = () => ({
@@ -46,9 +46,6 @@ const server = new ApolloServer({
       const { user } = await getUser(token);
       return { user };
     }
-    // onDisconnect: (webSocket, con) => {
-    //   console.log('disconnected!')
-    // },
   }
 });
 console.log('server.use', server.use);
