@@ -1,17 +1,17 @@
 // require('dotenv').config();
 import { ApolloServer } from 'apollo-server-express';
-import { createServer } from 'http'
-import { getUser } from './modules/auth'
-import Api from './datasources/api'
-import app from './modules'
-import typeDefs from './schema'
-import resolvers from './resolvers'
+import { createServer } from 'http';
+import { getUser } from './modules/auth';
+import Api from './datasources/api';
+import app from './modules';
+import typeDefs from './schema';
+import resolvers from './resolvers';
 
 const PORT = process.env.PORT || 8000;
-
+require('events').EventEmitter.defaultMaxListeners = 0;
 // set up any dataSources our resolvers need
 const dataSources = () => ({
-  api: new Api(),
+  api: new Api()
 });
 
 // the function that sets up the global context for each resolver, using the req
@@ -27,8 +27,8 @@ const context = async ({ req, connection }) => {
 };
 
 const engine = {
-  apiKey: process.env.ENGINE_API_KEY,
-}
+  apiKey: process.env.ENGINE_API_KEY
+};
 
 // Set up Apollo Server
 const server = new ApolloServer({
@@ -39,14 +39,14 @@ const server = new ApolloServer({
   engine,
   subscriptions: {
     onConnect: async ({ token }) => {
-      console.log('token! = ', token)
+      console.log('token! = ', token);
       const { user } = await getUser(token);
-      return { user }
-    },
+      return { user };
+    }
     // onDisconnect: (webSocket, con) => {
     //   console.log('disconnected!')
     // },
-  },
+  }
 });
 
 server.applyMiddleware({ app });
@@ -56,9 +56,15 @@ server.installSubscriptionHandlers(httpServer);
 
 // ⚠️ Pay attention to the fact that we are calling `listen` on the http server variable, and not on `app`.
 httpServer.listen(PORT, () => {
-  console.log(`🚀 http Server ready at http://localhost:${PORT}${server.graphqlPath}`)
-  console.log(`🚀 http Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
-})
+  console.log(
+    `🚀 http Server ready at http://localhost:${PORT}${server.graphqlPath}`
+  );
+  console.log(
+    `🚀 http Subscriptions ready at ws://localhost:${PORT}${
+      server.subscriptionsPath
+    }`
+  );
+});
 // export all the important pieces for integration/e2e tests to use
 module.exports = {
   dataSources,
@@ -67,5 +73,5 @@ module.exports = {
   resolvers,
   ApolloServer,
   Api,
-  server,
+  server
 };
