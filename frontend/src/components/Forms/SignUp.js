@@ -74,6 +74,10 @@ class SignUp extends Component {
                 </h4>
               </CardHeader>
               <CardBody>
+                <div className='d-flex flex-column'>
+                  <div>username: gpbaculio1320@gmail.coom</div>
+                  <div>password: abcd123</div>
+                </div>
                 <form onSubmit={this.onSubmit}>
                   <div className="form-group">
                     <label className="form-label w-100" htmlFor="email">
