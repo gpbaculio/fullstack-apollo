@@ -34,7 +34,7 @@
     "reactstrap": "^6.5.0",
     "subscriptions-transport-ws": "^0.9.15",
     "uuid": "^3.3.2",
-    "validator": "^10.9.0"
+    "validator": "^13.7.0"
   },
   "scripts": {
     "start": "react-scripts start",
